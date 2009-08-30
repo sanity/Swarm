@@ -19,9 +19,11 @@ object Swarm {
 	}
 	
 	def exp1(u : Unit) = {
-		log("Before")
+		val name = scala.Console.readLine("What is your name? : ");
 		moveTo(new Location(myLocation.address, 9997))
-		log("After")
+		val age = scala.Console.readLine("Hello "+name+", what age are you? : ")
+		moveTo(new Location(myLocation.address, 9998))
+		println("And back again "+name+" who is "+age+" years old")
 		NoBee()
 	}
 	
@@ -50,8 +52,6 @@ object Swarm {
 		execute(reset {
 			log("Running task");
 			toRun();
-//			log("Completed task");
-//			NoBee()
 		})
 	}
 	
