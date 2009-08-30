@@ -18,7 +18,7 @@ object Swarm {
 		println(myLocation.port+" : "+message);
 	}
 	
-	def exp1() : Bee @cps[Bee, Bee] = {
+	def exp1(u : Unit) = {
 		log("Before")
 		moveTo(new Location(myLocation.address, 9997))
 		log("After")
@@ -31,7 +31,7 @@ object Swarm {
 		val srvr = new ServerSocket(myLocation.port);
 
 		if (args.length > 1 && args(1) == "start") {
-			run(exp1);
+			spawn(exp1);
 		}
 		
 		while (true) {
@@ -39,17 +39,27 @@ object Swarm {
 			val sock = srvr.accept();
 			log("Received connection");
 			val ois = new ObjectInputStream(sock.getInputStream());
-			val bee = ois.readObject().asInstanceOf[(() => Bee)];
+			val bee = ois.readObject().asInstanceOf[(Unit => Bee)];
 			log("Executing continuation");
 			run(bee);
 		}
+	}
+	
+	
+	def run(toRun : Unit => Bee @cps[Bee, Bee]) = {
+		execute(reset {
+			log("Running task");
+			toRun();
+//			log("Completed task");
+//			NoBee()
+		})
 	}
 	
 	/**
 	 * Start a new Swarm task (will return immediately as
 	 * task is started in a new thread)
 	 */
-	def run(toRun : () => Bee @cps[Bee, Bee]) = {
+	def spawn(toRun : Unit => Bee @cps[Bee, Bee]) = {
 		val thread = new Thread() {
 			override def run() = {
 				execute(reset {
@@ -64,7 +74,7 @@ object Swarm {
 	}
 	
 	def moveTo(location : Location) = shift {
-		c: (() => Bee) => {
+		c: (Unit => Bee) => {
 			log("Move to")
 			if (Swarm.isLocal(location)) {
 				log("Is local")
