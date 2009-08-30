@@ -1,0 +1,45 @@
+/home/ian/workspace/Swarm/bin:/opt/eclipse/configuration/org.eclipse.osgi/bundles/321/1/.cp/lib/scala-library.jar:/opt/eclipse/configuration/org.eclipse.osgi/bundles/321/1/.cp/lib/scala-dbc.jar:/opt/eclipse/configuration/org.eclipse.osgi/bundles/321/1/.cp/lib/scala-swing.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/resources.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/rt.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/jsse.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/jce.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/charsets.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/ext/localedata.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-6-sun-1.6.0.14/jre/lib/ext/sunpkcs11.jar:/home/ian/local/share/scala/plugin-build/continuations/build/pack/selectivecps-library.jar
+-------
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/src/swarm/Location.scala
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/src/swarm/Bee.scala
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/src/swarm/Swarm.scala
+/home/ian/workspace/Swarm/src/swarm/Store.scala -> /home/ian/workspace/Swarm/src/swarm/Store.scala
+/home/ian/workspace/Swarm/src/swarm/Location.scala -> /home/ian/workspace/Swarm/src/swarm/Location.scala
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/src/swarm/ContTest.scala
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/src/swarm/Location.scala
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/src/swarm/Bee.scala
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/src/swarm/Location.scala
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/src/swarm/Reference.scala
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/src/swarm/Store.scala
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/src/swarm/Swarm.scala
+-------
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/bin/swarm/Swarm$$anon$1$$anonfun$run$1$$anonfun$apply$1.class
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/bin/swarm/Swarm$$anonfun$moveTo$1.class
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/bin/swarm/Swarm$$anon$1.class
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/bin/swarm/Swarm$$anon$1$$anonfun$run$1.class
+/home/ian/workspace/Swarm/src/swarm/Swarm.scala -> /home/ian/workspace/Swarm/bin/swarm/Swarm$.class
+/home/ian/workspace/Swarm/src/swarm/Store.scala -> /home/ian/workspace/Swarm/bin/swarm/Store$.class
+/home/ian/workspace/Swarm/src/swarm/Location.scala -> /home/ian/workspace/Swarm/bin/swarm/Location.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root2$1.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/NoCont.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root1$1$$anonfun$apply$1$$anonfun$apply$2.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root2$1$$anonfun$apply$3$$anonfun$apply$4.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/NoCont$.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/IsCont.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root1$1.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$get$1.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root2$1$$anonfun$apply$5.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/IsCont$.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root1$1$$anonfun$apply$1.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/Cont.class
+/home/ian/workspace/Swarm/src/swarm/ContTest.scala -> /home/ian/workspace/Swarm/bin/swarm/ContTest$$anonfun$root2$1$$anonfun$apply$3.class
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/bin/swarm/IsBee$.class
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/bin/swarm/Bee.class
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/bin/swarm/NoBee$.class
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/bin/swarm/IsBee.class
+/home/ian/workspace/Swarm/src/swarm/Bee.scala -> /home/ian/workspace/Swarm/bin/swarm/NoBee.class
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/bin/swarm/Reference$.class
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/bin/swarm/Reference.class
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/bin/swarm/Reference$$anonfun$create$1.class
+/home/ian/workspace/Swarm/src/swarm/Reference.scala -> /home/ian/workspace/Swarm/bin/swarm/Reference$$anonfun$apply$1.class
