@@ -64,11 +64,11 @@ object Swarm {
 	}
 	
 	def moveTo(location : Location) = shift {
-		c: (Unit => Bee) => {
+		c: (() => Bee) => {
 			log("Move to")
 			if (Swarm.isLocal(location)) {
 				log("Is local")
-				c(location)
+				c()
 				NoBee()
 			} else {
 				log("Moving task to "+location.port);
