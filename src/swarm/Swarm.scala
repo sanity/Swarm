@@ -41,7 +41,7 @@ object Swarm {
 			val sock = srvr.accept();
 			log("Received connection");
 			val ois = new ObjectInputStream(sock.getInputStream());
-			val bee = ois.readObject().asInstanceOf[(Unit => Bee @cps[Bee, Bee])];
+			val bee = ois.readObject().asInstanceOf[(Unit => Bee)];
 			log("Executing continuation");
 			run((Unit) => shiftUnit(bee()));
 		}
@@ -52,8 +52,8 @@ object Swarm {
 		execute(reset {
 			log("Running task");
 			toRun();
-			log("Done running task");
-			NoBee();
+//			log("Completed task");
+//			NoBee()
 		})
 	}
 	
@@ -67,8 +67,8 @@ object Swarm {
 				execute(reset {
 					log("Running task");
 					toRun();
-//					log("Completed task");
-//					NoBee()
+					log("Completed task");
+					NoBee()
 				})
 			}
 		};
@@ -77,6 +77,7 @@ object Swarm {
 	
 	def moveTo(location : Location) = shift {
 		c: (Unit => Bee) => {
+			log("Move to")
 			if (Swarm.isLocal(location)) {
 				log("Is local")
 				c()
