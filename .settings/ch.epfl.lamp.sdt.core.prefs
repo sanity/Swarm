@@ -1,4 +1,4 @@
-#Fri Aug 28 12:29:01 CDT 2009
+#Tue Sep 01 10:01:28 CDT 2009
 Xcheck-null=false
 Xcheckinit=false
 Xdisable-assertions=false
@@ -7,7 +7,7 @@ Xfuture=false
 Xlog-implicits=false
 Xno-uescape=false
 Xno-varargs-conversion=false
-Xpluginsdir=/home/ian/local/share/scala/plugin-build/continuations/build/pack
+Xpluginsdir=/Users/ian/local/share/scala/plugin-build/continuations/build/pack
 Xwarninit=false
 Yclosure-elim=false
 Ydead-code=false
