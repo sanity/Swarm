@@ -27,13 +27,28 @@ object Swarm {
 		NoBee()
 	}
 	
+	def exp2(u : Unit) = {
+		val vLoc = Reference.create[String](myLocation, "test local string");
+		val vRem = Reference.create[String](new Location(myLocation.address, 9997), "test remote string");
+		moveTo(vLoc.location)
+		println("moved 1");
+		//println(vLoc());
+		moveTo(vRem.location)
+		println("moved 2");
+		//println(vRem());
+		NoBee()
+	}
+	
 	def main(args : Array[String]) = {
 		myLocation = new Location(InetAddress.getLocalHost(), java.lang.Short.parseShort(args(0)));
 	
 		val srvr = new ServerSocket(myLocation.port);
 
-		if (args.length > 1 && args(1) == "start") {
+		if (args.length > 1 && args(1) == "start1") {
 			spawn(exp1);
+		}
+		if (args.length > 1 && args(1) == "start2") {
+			spawn(exp2);
 		}
 		
 		while (true) {

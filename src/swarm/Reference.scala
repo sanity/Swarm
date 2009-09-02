@@ -4,7 +4,7 @@ import scala.continuations._
 import scala.continuations.ControlContext._ 
 import scala.actors.remote._
 
-class Reference[Type](typeClass : Class[Type], location : Location, uid : Long) {
+class Reference[Type](val typeClass : Class[Type], val location : Location, val uid : Long) {
 	def apply() = {
 		Swarm.moveTo(location);
 		Store(typeClass, uid);
