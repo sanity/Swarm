@@ -39,18 +39,11 @@ object Swarm {
 		NoBee()
 	}
 	
-	def main(args : Array[String]) = {
-		myLocation = new Location(InetAddress.getLocalHost(), java.lang.Short.parseShort(args(0)));
+	def listen(port : Short) = {
+		myLocation = new Location(InetAddress.getLocalHost(), port);
 	
 		val srvr = new ServerSocket(myLocation.port);
 
-		if (args.length > 1 && args(1) == "start1") {
-			spawn(exp1);
-		}
-		if (args.length > 1 && args(1) == "start2") {
-			spawn(exp2);
-		}
-		
 		while (true) {
 			log("Waiting for connection");
 			val sock = srvr.accept();
@@ -96,7 +89,7 @@ object Swarm {
 			if (Swarm.isLocal(location)) {
 				log("Is local")
 				c()
-				NoBee()
+//				NoBee()
 			} else {
 				log("Moving task to "+location.port);
 				IsBee(c, location)
