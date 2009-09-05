@@ -4,12 +4,16 @@ import swarm._;
 import swarm.Swarm._;
 
 object ExplicitMoveTo1 {
-	def main(args : Array[String]) = {
+	def main(args : Array[String]) = {		
+		Swarm.listen(java.lang.Short.parseShort(args(0)));
+
 		if (args.length > 1 && args(1) == "start") {
 			Swarm.spawn(emt1Thread);
 		}
 
-		Swarm.listen(java.lang.Short.parseShort(args(0)));
+		while(true) {
+			Thread.sleep(1000);
+		}
 	}
 	
 	def emt1Thread(u : Unit) = {

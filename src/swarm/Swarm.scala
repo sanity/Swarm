@@ -10,49 +10,36 @@ import java.io._
 object Swarm {
 	var myLocation : Location = null;
 	
+	var shouldLog = false;
+	
 	def isLocal(loc : Location) = {
 		loc.equals(myLocation);
 	}
 
 	def log(message : String) = {
-		println(myLocation.port+" : "+message);
+		if (shouldLog) println(myLocation.port+" : "+message);
 	}
-	
-	def exp1(u : Unit) = {
-		val name = scala.Console.readLine("What is your name? : ");
-		moveTo(new Location(myLocation.address, 9997))
-		val age = scala.Console.readLine("Hello "+name+", what age are you? : ")
-		moveTo(new Location(myLocation.address, 9998))
-		println("And back again "+name+" who is "+age+" years old")
-		NoBee()
-	}
-	
-	def exp2(u : Unit) = {
-		val vLoc = Reference.create[String](myLocation, "test local string");
-		val vRem = Reference.create[String](new Location(myLocation.address, 9997), "test remote string");
-		moveTo(vLoc.location)
-		println("moved 1");
-		//println(vLoc());
-		moveTo(vRem.location)
-		println("moved 2");
-		//println(vRem());
-		NoBee()
-	}
-	
+
 	def listen(port : Short) = {
 		myLocation = new Location(InetAddress.getLocalHost(), port);
 	
 		val srvr = new ServerSocket(myLocation.port);
 
-		while (true) {
-			log("Waiting for connection");
-			val sock = srvr.accept();
-			log("Received connection");
-			val ois = new ObjectInputStream(sock.getInputStream());
-			val bee = ois.readObject().asInstanceOf[(Unit => Bee)];
-			log("Executing continuation");
-			run((Unit) => shiftUnit(bee()));
+		var listenThread = new Thread() {
+			override def run() = {
+				while (true) {
+					log("Waiting for connection");
+					val sock = srvr.accept();
+					log("Received connection");
+					val ois = new ObjectInputStream(sock.getInputStream());
+					val bee = ois.readObject().asInstanceOf[(Unit => Bee)];
+					log("Executing continuation");
+					Swarm.run((Unit) => shiftUnit(bee()));
+				}
+			}
 		}
+		listenThread.start();
+		Thread.sleep(500);
 	}
 	
 	
@@ -108,7 +95,7 @@ object Swarm {
 				log("Transmission complete");
 			}
 			case NoBee() => {
-				println("No more continuations to execute");
+				log("No more continuations to execute");
 			}
 		}
 	}
