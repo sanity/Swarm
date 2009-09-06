@@ -15,15 +15,26 @@ object ForceRemoteRef {
 	}
 	
 	def frrThread(u : Unit) = {
+		
 		println("1");
+			
 		val vLoc = Ref("test local string");
+		
 		println("2");
-		val vRem = Ref(new Location(myLocation.address, 9997), "test remote string");
+			
+		val vRem = Ref(new Location(myLocation.address, 9997), 
+				       "test remote string");
+		
 		println("3");
+			
 		println(vLoc());
+		
 		println("4");
+			
 		println(vRem());
+		
 		println("5");
+		
 		NoBee()
 	}
 }

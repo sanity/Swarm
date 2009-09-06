@@ -7,8 +7,11 @@ import scala.actors.remote._
 @serializable class Ref[Type](val typeClass : Class[Type], val location : Location, val uid : Long) {
 	def apply() = {
 		Swarm.moveTo(location);
-		Store(typeClass, uid);
-	}
+		Store(typeClass, uid) match {
+			case Some(v) => v
+			case None => throw new RuntimeException("Unable to find item with uid "+uid+" in local store");
+		};
+	} : Type @cps[Bee, Bee]
 }
 
 object Ref {
