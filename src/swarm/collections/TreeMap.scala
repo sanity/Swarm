@@ -15,7 +15,7 @@ class TreeMap[A <% Ordered[A], B]() {
 	var right : Option[Ref[TreeMap[A, B]]] = None;
 	var kv : Option[(A, B)] = None;
 
-	def apply(k : A) : Option[B] @cps[Bee, Bee] = {
+	def apply(k : A) : Option[B] @swarm = {
 		kv match {
 			case Some((key, value)) if k == key => Some(value)
 			case Some((key, value)) if k < key => left match {
@@ -30,7 +30,7 @@ class TreeMap[A <% Ordered[A], B]() {
 		}
 	}
 	
-	def update(k : A, v : B) : Unit @cps[Bee, Bee] = {
+	def update(k : A, v : B) : Unit @swarm = {
 		kv match {
 			case Some((key, value)) if k == key => kv = Some((k, v))
 			case Some((key, value)) if k < key => {

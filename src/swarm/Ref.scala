@@ -1,5 +1,7 @@
 package swarm
 
+import swarm.Swarm._
+
 import scala.continuations._ 
 import scala.continuations.ControlContext._ 
 import scala.actors.remote._
@@ -11,7 +13,7 @@ import scala.actors.remote._
 			case Some(v) => v
 			case None => throw new RuntimeException("Unable to find item with uid "+uid+" in local store");
 		};
-	} : Type @cps[Bee, Bee]
+	} : Type @swarm
 }
 
 object Ref {

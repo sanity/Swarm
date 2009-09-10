@@ -8,6 +8,8 @@ import java.net._
 import java.io._
 
 object Swarm {
+	type swarm = cps[Bee, Bee];
+	
 	var myLocation : Location = null;
 	
 	var shouldLog = false;
@@ -43,7 +45,7 @@ object Swarm {
 	}
 	
 	
-	def run(toRun : Unit => Bee @cps[Bee, Bee]) = {
+	def run(toRun : Unit => Bee @swarm) = {
 		execute(reset {
 			log("Running task");
 			toRun();
@@ -56,7 +58,7 @@ object Swarm {
 	 * Start a new Swarm task (will return immediately as
 	 * task is started in a new thread)
 	 */
-	def spawn(toRun : Unit => Bee @cps[Bee, Bee]) = {
+	def spawn(toRun : Unit => Bee @swarm) = {
 		val thread = new Thread() {
 			override def run() = {
 				execute(reset {
