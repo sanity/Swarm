@@ -13,15 +13,15 @@ import scala.actors.remote._
 			case Some(v) => v
 			case None => throw new RuntimeException("Unable to find item with uid "+uid+" in local store");
 		};
-	} : Type @swarm
+	}
 }
 
 object Ref {
-	def apply[Type](value : AnyRef) : Ref[Type] @cps[Bee, Bee] = {
+	def apply[Type](value : AnyRef) : Ref[Type] @swarm = {
 		apply(Swarm.myLocation, value);
 	}
 	
-	def apply[Type](location : Location, value : AnyRef) : Ref[Type] @cps[Bee, Bee] = {
+	def apply[Type](location : Location, value : AnyRef) : Ref[Type] @swarm = {
 		Swarm.moveTo(location);
 		val uid = Store.save(value);
 		new Ref[Type](value.getClass().asInstanceOf[Class[Type]], location, uid);

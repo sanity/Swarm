@@ -12,7 +12,7 @@ object Swarm {
 	
 	var myLocation : Location = null;
 	
-	var shouldLog = false;
+	var shouldLog = true;
 	
 	def isLocal(loc : Location) = {
 		loc.equals(myLocation);
