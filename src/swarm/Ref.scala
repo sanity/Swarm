@@ -26,4 +26,8 @@ object Ref {
 		val uid = Store.save(value);
 		new Ref[Type](value.getClass().asInstanceOf[Class[Type]], location, uid);
 	}
+	
+	def unapply[Type](ref : Ref[Type]) = {
+		Some(ref())
+	}
 }
