@@ -1,10 +1,10 @@
 #!/bin/bash
-if [ ! -f bin ]
+if [ ! -f target ]
 then
-  mkdir bin
+  mkdir target
 fi
 scalac -cp $SCALA_C_DIR/build/pack/selectivecps-library.jar \
 	-unchecked \
        -Xpluginsdir $SCALA_C_DIR/build/pack \
-       -sourcepath src -d bin/ \
-       `find src -name '*.scala'`
+       -sourcepath src/main/scala -d target/ \
+       `find src/main/scala -name '*.scala'`
