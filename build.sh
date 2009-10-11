@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ ! -f target ]
+if [ ! -d target ]
 then
   mkdir target
 fi
