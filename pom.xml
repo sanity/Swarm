@@ -42,8 +42,6 @@
         </pluginRepository>
     </pluginRepositories>
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <outputDirectory>bin</outputDirectory>
         <pluginManagement>
             <plugins>
                 <plugin>
