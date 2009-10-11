@@ -6,6 +6,12 @@ import scala.continuations._
 import scala.continuations.ControlContext._ 
 import scala.actors.remote._
 
+/**
+ Represents a reference to an object which may reside on a remote computer.
+ If apply() is called to retrieve the remote object, it will result in
+ the thread being serialized and moved to the remote computer, before
+ returning the object.
+ **/
 @serializable class Ref[Type](val typeClass : Class[Type], val location : Location, val uid : Long) {
 	def apply() = {
 		Swarm.moveTo(location);
