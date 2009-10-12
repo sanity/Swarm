@@ -1,7 +1,7 @@
 #!/bin/bash
-if [ ! -d target ]
+if [ ! -d target/classes ]
 then
-  mkdir target
+  mkdir -p target/classes
 fi
 scalac -cp $SCALA_C_DIR/build/pack/selectivecps-library.jar \
 	-unchecked \
