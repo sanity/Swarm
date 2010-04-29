@@ -5,3 +5,7 @@ target/
 *.iml
 *.iws
 .idea/
+src_managed/
+project/boot/
+project/plugins/project/
+lib_managed/

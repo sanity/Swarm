@@ -1,10 +1,12 @@
 package swarm;
 
-import scala.continuations._ 
-import scala.continuations.ControlContext._ 
-import scala.continuations.Loops._
+import scala.util.continuations._ 
+//import scala.continuations.ControlContext._ 
+//import scala.continuations.Loops._
+//import scala.util.continuations.ControlContext.{shift,reset}
 
 object ContTest {
+
 	def get(k : String) = shift { 
 		c: (String => Cont) => {
 			if (k == "local") {
@@ -22,17 +24,18 @@ object ContTest {
 		println("Second get result: "+get("remote"));
 		NoCont()
 	}
-	
+	/*  How does one implement this now that ControlContext is a class?
 	def root2() : Cont = reset {
 		val num = List(1,2,3,4,5);
 		for (n <- num.suspendable) {
 			println("get "+get("remote"));
 		}
 		NoCont()
-	}
+	}*/
 
 	def main(args: Array[String]) {
-		execute(root2())
+		execute(root1())
+		// execute(root2())
 	}
 	
 	def execute(cont : Cont) {
@@ -47,6 +50,7 @@ object ContTest {
 			}
 		}
 	}
+        
 }
 
 abstract class Cont

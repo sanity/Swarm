@@ -1,14 +1,14 @@
 package swarm
 
-import scala.continuations._ 
-import scala.continuations.ControlContext._ 
-import scala.continuations.Loops._
+import scala.util.continuations._ 
+//import scala.util.continuations.ControlContext._ 
+//import scala.util.continuations.Loops._
 
 import java.net._
 import java.io._
 
 object Swarm {
-	type swarm = cps[Bee, Bee];
+	type swarm = cpsParam[Bee, Bee];
 	
 	var myLocation : Location = null;
 	

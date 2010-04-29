@@ -2,8 +2,8 @@ package swarm
 
 import swarm.Swarm._
 
-import scala.continuations._ 
-import scala.continuations.ControlContext._ 
+import scala.util.continuations._ 
+//import scala.continuations.ControlContext._ 
 import scala.actors.remote._
 
 /**
