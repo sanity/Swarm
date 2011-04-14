@@ -19,7 +19,7 @@ object Swarm {
 	}
 
 	def log(message : String) = {
-		if (shouldLog) println(myLocation.port+" : "+message);
+		if (shouldLog) Option(myLocation).map(location => println(location.port + " : " + message))
 	}
 
 	def listen(port : Short) = {
