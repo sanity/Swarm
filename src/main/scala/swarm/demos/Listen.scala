@@ -1,13 +1,12 @@
-package swarm.demos;
+package swarm.demos
 
-import swarm._;
-import swarm.Swarm._;
+import swarm.InetSwarm
 
 object Listen {
-	def main(args : Array[String]) = {
-		Swarm.listen(java.lang.Short.parseShort(args(0)));
+	def main(args: Array[String]) = {
+		InetSwarm.listen(java.lang.Short.parseShort(args(0)))
 		while(true) {
-			Thread.sleep(1000);
+			Thread.sleep(1000)
 		}
 	}
 }

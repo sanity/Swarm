@@ -1,104 +1,110 @@
 package swarm
 
-import scala.util.continuations._ 
-//import scala.util.continuations.ControlContext._ 
-//import scala.util.continuations.Loops._
+import util.continuations._
 
-import java.net._
-import java.io._
+/**
+ * SwarmExecutor owns all of the continuations code.  Implementations must
+ * define isLocal() and transmit().  isLocal() determines whether the given
+ * location corresponds to this instance of SwarmExecutor, and transmit() sends
+ * the continuation to another destination
+ */
+trait SwarmExecutor {
 
-object Swarm {
-	type swarm = cpsParam[Bee, Bee];
-	
-	var myLocation : Location = null;
-	
-	var shouldLog = true;
-	
-	def isLocal(loc : Location) = {
-		loc.equals(myLocation);
-	}
+  // To be defined by concrete implementations
+  def isLocal(location: Location): Boolean
 
-	def log(message : String) = {
-		if (shouldLog) Option(myLocation).map(location => println(location.port + " : " + message))
-	}
+  def transmit(f: (Unit => Bee), destination: Location): Unit
 
-	def listen(port : Short) = {
-		myLocation = new Location(InetAddress.getLocalHost(), port);
-	
-		val srvr = new ServerSocket(myLocation.port);
+  type swarm = cpsParam[Bee, Bee]
 
-		var listenThread = new Thread() {
-			override def run() = {
-				while (true) {
-					log("Waiting for connection");
-					val sock = srvr.accept();
-					log("Received connection");
-					val ois = new ObjectInputStream(sock.getInputStream());
-					val bee = ois.readObject().asInstanceOf[(Unit => Bee)];
-					log("Executing continuation");
-					Swarm.run((Unit) => shiftUnit(bee()));
-				}
-			}
-		}
-		listenThread.start();
-		Thread.sleep(500);
-	}
-	
-	
-	def run(toRun : Unit => Bee @swarm) = {
-		execute(reset {
-			log("Running task");
-			toRun();
-//			log("Completed task");
-//			NoBee()
-		})
-	}
-	
-	/**
-	 * Start a new Swarm task (will return immediately as
-	 * task is started in a new thread)
-	 */
-	def spawn(toRun : Unit => Bee @swarm) = {
-		val thread = new Thread() {
-			override def run() = {
-				execute(reset {
-					log("Running task");
-					toRun();
-					log("Completed task");
-					NoBee()
-				})
-			}
-		};
-		thread.start();
-	}
-	
-	def moveTo(location : Location) = shift {
-		c: (Unit => Bee) => {
-			log("Move to")
-			if (Swarm.isLocal(location)) {
-				log("Is local")
-				c()
-//				NoBee()
-			} else {
-				log("Moving task to "+location.port);
-				IsBee(c, location)
-			}
-		}
-	}
-	
-	def execute(bee : Bee) = {
-		bee match {
-			case IsBee(contFunc, location) => {
-				log("Transmitting task to "+location.port);
-				val skt = new Socket(location.address, location.port);
-				val oos = new ObjectOutputStream(skt.getOutputStream());
-				oos.writeObject(contFunc);
-				oos.close();
-				log("Transmission complete");
-			}
-			case NoBee() => {
-				log("No more continuations to execute");
-			}
-		}
-	}
+  /**
+   * Called from concrete implementations to run the continuation
+   */
+  def continue(bee: (Unit => Bee)) = {
+    val f: (Unit => Bee@swarm) = ((Unit) => shiftUnit(bee()))
+    execute(reset {
+      f()
+    })
+  }
+
+  /**
+   * Start a new Swarm task (will return immediately as task is started in a
+   * new thread)
+   */
+  def spawn(f: Unit => Bee@swarm) = {
+    val thread = new Thread() {
+      override def run() = {
+        execute(reset {
+          f()
+          NoBee()
+        })
+      }
+    }
+    thread.start()
+  }
+
+  /**
+   * Relocates the code to the given destination
+   */
+  def moveTo(destination: Location) = shift {
+    c: (Unit => Bee) => {
+      IsBee(c, destination)
+    }
+  }
+
+  /**
+   * Executes the continuation if it should be run locally, otherwise
+   * relocates to the given destination
+   */
+  def execute(bee: Bee) = {
+    bee match {
+      case IsBee(f, destination) if isLocal(destination) => f()
+      case IsBee(f, destination) => transmit(f, destination)
+      case NoBee() =>
+    }
+  }
+}
+
+/**
+ * A concrete implementation of SwarmExecutor which uses sockets for
+ * communication.
+ */
+object InetSwarm extends SwarmExecutor {
+
+  def localHost: java.net.InetAddress = java.net.InetAddress.getLocalHost
+
+  private[this] var _local: Option[InetLocation] = None
+
+  def local: InetLocation = _local.getOrElse(new InetLocation(localHost, 9997))
+
+  override def isLocal(location: Location): Boolean = local == location
+
+  override def transmit(f: (Unit => Bee), destination: Location) {
+    destination match {
+      case InetLocation(address, port) =>
+        val skt = new java.net.Socket(address, port);
+        val oos = new java.io.ObjectOutputStream(skt.getOutputStream());
+        oos.writeObject(f);
+        oos.close();
+    }
+  }
+
+  def listen(port: Short) {
+    _local = Some(new InetLocation(localHost, port))
+
+    val server = new java.net.ServerSocket(port);
+
+    var listenThread = new Thread() {
+      override def run() = {
+        while (true) {
+          val socket = server.accept()
+          val ois = new java.io.ObjectInputStream(socket.getInputStream())
+          val bee = ois.readObject().asInstanceOf[(Unit => Bee)]
+          continue(bee)
+        }
+      }
+    }
+    listenThread.start();
+    Thread.sleep(500);
+  }
 }

@@ -1,13 +1,12 @@
-package swarm.demos;
+package swarm.demos
 
-import swarm._;
-import swarm.Swarm._;
+import swarm._
 
 object ForceRemoteRef {
 	def main(args : Array[String]) = {
-		Swarm.listen(java.lang.Short.parseShort(args(0)));
+		InetSwarm.listen(java.lang.Short.parseShort(args(0)));
 		if (args.length > 1 && args(1) == "start") {
-			Swarm.spawn(frrThread);
+			InetSwarm.spawn(frrThread);
 		}
 		while(true) {
 			Thread.sleep(1000);
@@ -18,11 +17,11 @@ object ForceRemoteRef {
 		
 		println("1");
 			
-		val vLoc = Ref("test local string");
+		val vLoc = InetRef("test local string");
 		
 		println("2");
 			
-		val vRem = Ref(new Location(myLocation.address, 9997), 
+		val vRem = InetRef(InetSwarm.local,
 				       "test remote string");
 		
 		println("3");
