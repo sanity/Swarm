@@ -1,9 +1,10 @@
 import sbt._
 
 
-class SwarmProject(info: ProjectInfo) extends DefaultProject(info) 
-with AutoCompilerPlugins
-{
+class SwarmProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
+
+  val scalatest = "org.scalatest" % "scalatest" % "1.3"
+
   val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.8.1")
   override def compileOptions = 
     super.compileOptions ++ compileOptions("-P:continuations:enable")
