@@ -28,9 +28,9 @@ trait SwarmExecutor {
    * Start a new Swarm task (will return immediately as task is started in a
    * new thread)
    */
-  def spawn(f: Unit => Bee @swarm) {
+  def spawn(f: Unit => Bee@swarm) {
     val thread = new Thread() {
-      override def run() =  execute(reset(f()))
+      override def run() = execute(reset(f()))
     }
     thread.start()
   }
@@ -38,8 +38,9 @@ trait SwarmExecutor {
   /**
    * Relocates the code to the given destination
    */
-  def moveTo(destination: Location) = shift { c: (Unit => Bee) =>
-    IsBee(c, destination)
+  def moveTo(destination: Location) = shift {
+    c: (Unit => Bee) =>
+      IsBee(c, destination)
   }
 
   /**
@@ -64,6 +65,7 @@ object InetSwarm extends SwarmExecutor {
 
   private[this] val localHost: InetAddress = InetAddress.getLocalHost
   private[this] var _local: Option[InetLocation] = None
+
   def local: InetLocation = _local.getOrElse(new InetLocation(localHost, 9997))
 
   override def transmit(f: (Unit => Bee), destination: Location) {
