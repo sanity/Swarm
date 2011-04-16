@@ -8,16 +8,13 @@ object Swarm {
 
 /**
  * SwarmExecutor owns all of the continuations code.  Implementations must
- * define isLocal() and transmit().  isLocal() determines whether the given
- * location corresponds to this instance of SwarmExecutor, and transmit() sends
- * the continuation to another destination
+ * define transmit(), which sends the continuation to another destination
  */
 trait SwarmExecutor {
 
   import Swarm.swarm
 
   // To be defined by concrete implementations
-  def isLocal(location: Location): Boolean
   def transmit(f: (Unit => Bee), destination: Location): Unit
 
   /**
@@ -51,7 +48,6 @@ trait SwarmExecutor {
    */
   def execute(bee: Bee) {
     bee match {
-      case IsBee(f, destination) if isLocal(destination) => f()
       case IsBee(f, destination) => transmit(f, destination)
       case NoBee() =>
     }
@@ -64,13 +60,11 @@ trait SwarmExecutor {
  */
 object InetSwarm extends SwarmExecutor {
 
-  def localHost: java.net.InetAddress = java.net.InetAddress.getLocalHost
+  import java.net.InetAddress
 
+  private[this] val localHost: InetAddress = InetAddress.getLocalHost
   private[this] var _local: Option[InetLocation] = None
-
   def local: InetLocation = _local.getOrElse(new InetLocation(localHost, 9997))
-
-  override def isLocal(location: Location): Boolean = local == location
 
   override def transmit(f: (Unit => Bee), destination: Location) {
     destination match {

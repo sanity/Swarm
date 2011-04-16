@@ -39,7 +39,6 @@ object InMemSwarm {
 case class InMemLocation(val id: Int) extends Location
 
 class InMemSwarm(val local: InMemLocation) extends SwarmExecutor {
-  override def isLocal(location: Location): Boolean = local == location
   override def transmit(f: Unit => Bee, destination: Location) {
     InMemSwarm.getSwarm(destination).receive(f)
   }
