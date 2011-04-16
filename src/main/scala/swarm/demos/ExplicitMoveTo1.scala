@@ -2,6 +2,7 @@ package swarm.demos;
 
 import swarm._
 import swarm.InetSwarm._
+import swarm.Swarm.swarm
 
 object ExplicitMoveTo1 {
 	def main(args : Array[String]) = {		
@@ -16,7 +17,7 @@ object ExplicitMoveTo1 {
 		}
 	}
 	
-	def emt1Thread(u : Unit) = {
+	def emt1Thread(u : Unit): Bee @swarm = {
 		val name = scala.Console.readLine("What is your name? : ");
 		moveTo(new InetLocation(java.net.InetAddress.getLocalHost, 9997))
 		val age = Integer.parseInt(readLine("Hello "+name+", what age are you? : "))

@@ -2,6 +2,10 @@ package swarm
 
 import util.continuations._
 
+object Swarm {
+  type swarm = cpsParam[Bee, Bee]
+}
+
 /**
  * SwarmExecutor owns all of the continuations code.  Implementations must
  * define isLocal() and transmit().  isLocal() determines whether the given
@@ -10,35 +14,26 @@ import util.continuations._
  */
 trait SwarmExecutor {
 
+  import Swarm.swarm
+
   // To be defined by concrete implementations
   def isLocal(location: Location): Boolean
-
   def transmit(f: (Unit => Bee), destination: Location): Unit
-
-  type swarm = cpsParam[Bee, Bee]
 
   /**
    * Called from concrete implementations to run the continuation
    */
-  def continue(bee: (Unit => Bee)) = {
-    val f: (Unit => Bee@swarm) = ((Unit) => shiftUnit(bee()))
-    execute(reset {
-      f()
-    })
+  def continue(f: Unit => Bee) {
+    execute(reset(f()))
   }
 
   /**
    * Start a new Swarm task (will return immediately as task is started in a
    * new thread)
    */
-  def spawn(f: Unit => Bee@swarm) = {
+  def spawn(f: Unit => Bee @swarm) {
     val thread = new Thread() {
-      override def run() = {
-        execute(reset {
-          f()
-          NoBee()
-        })
-      }
+      override def run() =  execute(reset(f()))
     }
     thread.start()
   }
@@ -46,17 +41,15 @@ trait SwarmExecutor {
   /**
    * Relocates the code to the given destination
    */
-  def moveTo(destination: Location) = shift {
-    c: (Unit => Bee) => {
-      IsBee(c, destination)
-    }
+  def moveTo(destination: Location) = shift { c: (Unit => Bee) =>
+    IsBee(c, destination)
   }
 
   /**
    * Executes the continuation if it should be run locally, otherwise
    * relocates to the given destination
    */
-  def execute(bee: Bee) = {
+  def execute(bee: Bee) {
     bee match {
       case IsBee(f, destination) if isLocal(destination) => f()
       case IsBee(f, destination) => transmit(f, destination)

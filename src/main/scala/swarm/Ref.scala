@@ -19,7 +19,7 @@ package swarm
 
 object InetRef {
 
-  import swarm.InetSwarm.swarm
+  import swarm.Swarm.swarm
 
 	def apply[Type](value : AnyRef): InetRef[Type] @swarm = {
 		apply(InetSwarm.local, value);
