@@ -1,16 +1,14 @@
 package swarm
 
 import org.scalatest.FunSuite
-import util.continuations._
-
 class InMemSwarmTest extends FunSuite {
 
   test("execution moves from one swarm to another") {
     import Swarm.swarm
-    
-    InMemSwarm.getSwarm(InMemLocation(1)).execute(reset(imst()))
 
-    def imst(u: Unit): Bee @swarm = {
+    InMemSwarm.getSwarm(InMemLocation(1)).spawn(imst)
+
+    def imst(u: Unit): Bee@swarm = {
       assert(InMemSwarm.currentLocation == null)
 
       InMemSwarm.getSwarm(InMemLocation(1)).moveTo(InMemLocation(2))
@@ -18,7 +16,7 @@ class InMemSwarmTest extends FunSuite {
 
       InMemSwarm.getSwarm(InMemLocation(2)).moveTo(InMemLocation(1))
       assert(InMemSwarm.currentLocation == InMemLocation(1))
-      
+
       NoBee()
     }
   }
@@ -42,6 +40,7 @@ class InMemSwarm(val local: InMemLocation) extends SwarmExecutor {
   override def transmit(f: Unit => Bee, destination: Location) {
     InMemSwarm.getSwarm(destination).receive(f)
   }
+
   def receive(f: Unit => Bee) {
     InMemSwarm.currentLocation = local
     continue(f)
