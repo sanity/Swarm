@@ -1,10 +1,11 @@
 package swarm.demos
 
-import swarm.InetSwarm
+import swarm._
 
 object Listen {
 	def main(args: Array[String]) = {
-		InetSwarm.listen(java.lang.Short.parseShort(args(0)))
+    implicit val tx: Transporter = InetTransporter
+		InetTransporter.listen(java.lang.Short.parseShort(args(0)))
 		while(true) {
 			Thread.sleep(1000)
 		}

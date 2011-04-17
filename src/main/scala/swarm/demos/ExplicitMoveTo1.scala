@@ -1,12 +1,14 @@
 package swarm.demos;
 
 import swarm._
-import swarm.InetSwarm._
-import swarm.Swarm.swarm
+import swarm.Swarm._
 
 object ExplicitMoveTo1 {
-	def main(args : Array[String]) = {		
-		listen(java.lang.Short.parseShort(args(0)));
+	def main(args : Array[String]) = {
+
+    implicit val tx: Transporter = InetTransporter
+
+		InetTransporter.listen(java.lang.Short.parseShort(args(0)));
 
 		if (args.length > 1 && args(1) == "start") {
 			spawn(emt1Thread);
@@ -16,7 +18,7 @@ object ExplicitMoveTo1 {
 			Thread.sleep(1000);
 		}
 	}
-	
+
 	def emt1Thread(u : Unit): Bee @swarm = {
 		val name = scala.Console.readLine("What is your name? : ");
 		moveTo(new InetLocation(java.net.InetAddress.getLocalHost, 9997))
