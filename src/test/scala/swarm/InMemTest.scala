@@ -4,9 +4,9 @@ import Swarm.swarm
 import org.scalatest.FunSuite
 import util.continuations._
 
-class InMemSwarmTest extends FunSuite {
+class InMemTest extends FunSuite {
 
-  test("execution moves from one swarm to another") {
+  test("explicit moveTo transports execution") {
     InMemTest.currentLocation = None
 
     Swarm.execute(reset(imst()))(InMemTest.getSwarm(InMemLocation(1)))
@@ -23,11 +23,8 @@ class InMemSwarmTest extends FunSuite {
       NoBee()
     }
   }
-}
 
-class InMemRefTest extends FunSuite {
-
-  test("execution moves from one swarm to another") {
+  test("ref access transports execution") {
     InMemTest.currentLocation = None
 
     Swarm.execute(reset(imrt()))(InMemTest.getSwarm(InMemLocation(1)))
