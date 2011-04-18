@@ -2,13 +2,14 @@ package swarm.demos
 
 import swarm._
 import org.scalatest.FunSuite
+import util.continuations._
 
 class InMemRefTest extends FunSuite {
 
   test("execution moves from one swarm to another") {
     import Swarm.swarm
 
-    Swarm.spawn(imrt)(InMemSwarm.getSwarm(InMemLocation(1)))
+    Swarm.execute(reset(imrt()))(InMemSwarm.getSwarm(InMemLocation(1)))
 
     def imrt(u: Unit): Bee@swarm = {
       assert(InMemSwarm.currentLocation === None)
