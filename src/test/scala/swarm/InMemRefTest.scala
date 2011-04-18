@@ -11,14 +11,19 @@ class InMemRefTest extends FunSuite {
     Swarm.spawn(imrt)(InMemSwarm.getSwarm(InMemLocation(1)))
 
     def imrt(u: Unit): Bee@swarm = {
-      val sRef2 = Ref(InMemLocation(2), "test string two")
+      assert(InMemSwarm.currentLocation === None)
+
       val sRef1 = Ref(InMemLocation(1), "test string one")
+      assert(InMemSwarm.currentLocation === Some(InMemLocation(1)))
 
-      assert(sRef1.uid == 1)
-      assert(sRef1() == "test string one")
+      val sRef2 = Ref(InMemLocation(2), "test string two")
+      assert(InMemSwarm.currentLocation === Some(InMemLocation(2)))
 
-      assert(sRef2.uid == 2)
-      assert(sRef2() == "test string two")
+      assert(sRef1() === "test string one")
+      assert(InMemSwarm.currentLocation === Some(InMemLocation(1)))
+
+      assert(sRef2() === "test string two")
+      assert(InMemSwarm.currentLocation === Some(InMemLocation(2)))
 
       NoBee()
     }
@@ -34,7 +39,7 @@ object InMemSwarm {
     case InMemLocation(2) => swarm2
   }
 
-  var currentLocation: InMemLocation = _
+  var currentLocation: Option[InMemLocation] = None
 }
 
 case class InMemLocation(val id: Int) extends Location
@@ -45,8 +50,7 @@ class InMemTransporter(val local: InMemLocation) extends Transporter {
   }
 
   def receive(f: Unit => Bee) {
-    InMemSwarm.currentLocation = local
-    Store.nextUid = local.id
+    InMemSwarm.currentLocation = Some(local)
     Swarm.continue(f)(this)
   }
 }
