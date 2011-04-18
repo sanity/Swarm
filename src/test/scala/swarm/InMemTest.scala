@@ -1,10 +1,42 @@
 package swarm
 
-import Swarm.swarm
 import org.scalatest.FunSuite
 import util.continuations._
+import swarm.Swarm.{Swapped, swarm}
 
 class InMemTest extends FunSuite {
+
+  test("explicit swap transports data") {
+    InMemTest.currentLocation = None
+
+    Swarm.execute(reset(imrt()))(InMemTest.getSwarm(InMemLocation(1)))
+
+    def imrt(u: Unit): Bee@swarm = {
+      assert(InMemTest.currentLocation === None)
+
+      val sRef1 = Ref(InMemLocation(1), "test string one")
+      assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+      val sRef2 = Ref(InMemLocation(2), "test string two")
+      assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+      assert(sRef1() === "test string one")
+      assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+      assert(sRef2() === "test string two")
+      assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+      val swapped: Swapped[String, String] = Swarm.swap(sRef1, sRef2)
+
+      assert(swapped.ref1() === "test string one")
+      assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+      assert(swapped.ref2() === "test string two")
+      assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+      NoBee()
+    }
+  }
 
   test("explicit moveTo transports execution") {
     InMemTest.currentLocation = None
@@ -50,12 +82,12 @@ class InMemTest extends FunSuite {
 }
 
 object InMemTest {
-  val swarm1: InMemTransporter = new InMemTransporter(InMemLocation(1))
-  val swarm2: InMemTransporter = new InMemTransporter(InMemLocation(2))
+  val tx1: InMemTransporter = new InMemTransporter(InMemLocation(1))
+  val tx2: InMemTransporter = new InMemTransporter(InMemLocation(2))
 
   def getSwarm(location: Location): InMemTransporter = location match {
-    case InMemLocation(1) => swarm1
-    case InMemLocation(2) => swarm2
+    case InMemLocation(1) => tx1
+    case InMemLocation(2) => tx2
   }
 
   var currentLocation: Option[InMemLocation] = None

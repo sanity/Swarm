@@ -41,6 +41,23 @@ object Swarm {
       IsBee(c, destination)
   }
 
+  case class Swapped[A, B](ref1: Ref[A], ref2: Ref[B])
+
+  def swap[A, B](ref1: Ref[A], ref2: Ref[B]): Swapped[A, B]@swarm = {
+    val ref1Value = ref1()
+    val ref2Value = ref2()
+
+    moveTo(ref1.location)
+    Store.remove(ref1.uid) // TODO: don't simply remove the old value -> create a way to reference the new one
+    val newRef2 = new Ref[B](ref2.typeClass, ref1.location, Store.save(ref2Value))
+
+    moveTo(ref2.location)
+    Store.remove(ref2.uid) // TODO: don't simply remove the old value -> create a way to reference the new one
+    val newRef1 = new Ref[A](ref1.typeClass, ref2.location, Store.save(ref1Value))
+
+    Swapped(newRef1, newRef2)
+  }
+
   /**
    * Executes the continuation if it should be run locally, otherwise
    * relocates to the given destination
