@@ -41,21 +41,20 @@ object Swarm {
       IsBee(c, destination)
   }
 
+  def relocate[A](ref: Ref[A], destination: Location): Ref[A]@swarm = {
+    val refValue = ref()
+
+    moveTo(ref.location)
+    Store.remove(ref.uid) // TODO: don't simply remove the old value -> create a way to reference the new one
+
+    moveTo(destination)
+    new Ref[A](ref.typeClass, destination, Store.save(refValue))
+  }
+
   case class Swapped[A, B](ref1: Ref[A], ref2: Ref[B])
 
   def swap[A, B](ref1: Ref[A], ref2: Ref[B]): Swapped[A, B]@swarm = {
-    val ref1Value = ref1()
-    val ref2Value = ref2()
-
-    moveTo(ref1.location)
-    Store.remove(ref1.uid) // TODO: don't simply remove the old value -> create a way to reference the new one
-    val newRef2 = new Ref[B](ref2.typeClass, ref1.location, Store.save(ref2Value))
-
-    moveTo(ref2.location)
-    Store.remove(ref2.uid) // TODO: don't simply remove the old value -> create a way to reference the new one
-    val newRef1 = new Ref[A](ref1.typeClass, ref2.location, Store.save(ref1Value))
-
-    Swapped(newRef1, newRef2)
+    Swapped(relocate(ref1, ref2.location), relocate(ref2, ref1.location))
   }
 
   /**

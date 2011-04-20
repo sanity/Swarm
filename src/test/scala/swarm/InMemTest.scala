@@ -6,6 +6,27 @@ import swarm.Swarm.{Swapped, swarm}
 
 class InMemTest extends FunSuite {
 
+  test("explicit relocate transports data") {
+    InMemTest.currentLocation = None
+
+    Swarm.execute(reset(imrt()))(InMemTest.getSwarm(InMemLocation(1)))
+
+    def imrt(u: Unit): Bee@swarm = {
+      assert(InMemTest.currentLocation === None)
+
+      val ref = Ref(InMemLocation(1), "test string one")
+      assert(ref() === "test string one")
+      assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+      val newRef = Swarm.relocate(ref, InMemLocation(2))
+      
+      assert(newRef() === "test string one")
+      assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+      NoBee()
+    }
+  }
+
   test("explicit swap transports data") {
     InMemTest.currentLocation = None
 
@@ -14,19 +35,19 @@ class InMemTest extends FunSuite {
     def imrt(u: Unit): Bee@swarm = {
       assert(InMemTest.currentLocation === None)
 
-      val sRef1 = Ref(InMemLocation(1), "test string one")
+      val ref1 = Ref(InMemLocation(1), "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
-      val sRef2 = Ref(InMemLocation(2), "test string two")
+      val ref2 = Ref(InMemLocation(2), "test string two")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
-      assert(sRef1() === "test string one")
+      assert(ref1() === "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
-      assert(sRef2() === "test string two")
+      assert(ref2() === "test string two")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
-      val swapped: Swapped[String, String] = Swarm.swap(sRef1, sRef2)
+      val swapped: Swapped[String, String] = Swarm.swap(ref1, ref2)
 
       assert(swapped.ref1() === "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
@@ -37,7 +58,7 @@ class InMemTest extends FunSuite {
       NoBee()
     }
   }
-
+  
   test("explicit moveTo transports execution") {
     InMemTest.currentLocation = None
 
@@ -64,16 +85,16 @@ class InMemTest extends FunSuite {
     def imrt(u: Unit): Bee@swarm = {
       assert(InMemTest.currentLocation === None)
 
-      val sRef1 = Ref(InMemLocation(1), "test string one")
+      val ref1 = Ref(InMemLocation(1), "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
-      val sRef2 = Ref(InMemLocation(2), "test string two")
+      val ref2 = Ref(InMemLocation(2), "test string two")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
-      assert(sRef1() === "test string one")
+      assert(ref1() === "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
-      assert(sRef2() === "test string two")
+      assert(ref2() === "test string two")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
       NoBee()
