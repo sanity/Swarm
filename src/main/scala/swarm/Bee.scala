@@ -1,5 +1,7 @@
 package swarm
 
-@serializable abstract class Bee
-@serializable case class NoBee() extends Bee
-@serializable case class IsBee(contFunc : (Unit => Bee), location : Location) extends Bee
+@serializable sealed trait Bee
+
+case class NoBee() extends Bee
+
+case class IsBee(contFunc: (Unit => Bee), location: Location) extends Bee
