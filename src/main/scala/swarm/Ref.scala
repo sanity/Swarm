@@ -10,7 +10,7 @@ Represents a reference to an object which may reside on a remote computer.
  **/
 @serializable class Ref[A](val typeClass: Class[A], val location: Location, val uid: Long) {
   def apply() = {
-    Swarm.moveTo(location)
+    Swarm.dereference(this)
     Store(typeClass, uid).getOrElse(throw new RuntimeException("Unable to find item with uid " + uid + " in local store"))
   }
 }

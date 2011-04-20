@@ -1,15 +1,13 @@
 package swarm
 
-import scala.collection.mutable._
 import swarm.Swarm.swarm
 
 object Store {
   var nextUid = 0
 
-  val store = new HashMap[Long, Any]()
-
   case class Relocated(val uid: Long, val location: Location)
-  val relocated = new HashMap[Long, Relocated]()
+  val relocated = new collection.mutable.HashMap[Long, Relocated]()
+  val store = new collection.mutable.HashMap[Long, Any]()
 
   def apply[A](t: Class[A], uid: Long): Option[A]@swarm = {
     store.get(uid) match {

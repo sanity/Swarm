@@ -13,6 +13,8 @@ object InetTransporter extends Transporter {
 
   def local: InetLocation = _local.getOrElse(new InetLocation(localHost, 9997))
 
+  override def isLocal(location: Location) = local == location
+
   override def transport(f: (Unit => Bee), destination: Location) {
     destination match {
       case InetLocation(address, port) =>

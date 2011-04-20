@@ -6,18 +6,88 @@ import swarm.Swarm.{Swapped, swarm}
 
 class InMemTest extends FunSuite {
 
-  def executeWith(transporter: Transporter)(f: Unit => Bee@swarm) {
-    Swarm.execute(reset(f()))(transporter)
+  def execute(f: Unit => Bee@swarm) {
+    Swarm.execute(reset(f()))(InMemTest.getTransporter)
   }
 
-  test("explicit relocate() transports data") {
-    InMemTest.currentLocation = None
+  test("remote access should be tracked") {
+    InMemTest.currentLocation = Some(InMemLocation(1))
 
-    executeWith(InMemTest.getTransporter(InMemLocation(1))) {
+    execute {
       Unit =>
 
       // start with a clean slate
-        assert(InMemTest.currentLocation === None)
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+        // create a Ref
+        val ref1 = Ref(InMemLocation(1), "test string one")
+        assert(ref1() === "test string one")
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+        // ensure the Ref access was local/not tracked
+        assert(Swarm.getDemand(ref1) === 0)
+
+        // create a new Ref
+        val ref2 = Ref(InMemLocation(2), "test string two")
+        assert(ref2() === "test string two")
+        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+        // ensure the new Ref access was local/not tracked
+        assert(Swarm.getDemand(ref2) === 0)
+
+        // access the new Ref a few times
+        assert(ref2() === "test string two")
+        assert(ref2() === "test string two")
+        assert(ref2() === "test string two")
+        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+        // ensure the new Ref accesses were local/not tracked
+        assert(Swarm.getDemand(ref2) === 0)
+
+        // access the Ref
+        assert(ref1() === "test string one")
+
+        // ensure the Ref access was remote/tracked
+        assert(Swarm.getDemand(ref1) === 1)
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+        // access the Ref a few times
+        assert(ref1() === "test string one")
+        assert(ref1() === "test string one")
+        assert(ref1() === "test string one")
+
+        // ensure the Ref accesses were local/not tracked
+        assert(Swarm.getDemand(ref1) === 1)
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+
+        // access the new Ref
+        assert(ref2() === "test string two")
+
+        // ensure the Ref access was remote/tracked
+        assert(Swarm.getDemand(ref2) === 1)
+        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+        // access the Ref a few times
+        assert(ref2() === "test string two")
+        assert(ref2() === "test string two")
+        assert(ref2() === "test string two")
+
+        // ensure the Ref accesses were local/not tracked
+        assert(Swarm.getDemand(ref2) === 1)
+        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+
+        NoBee()
+    }
+  }
+
+  test("explicit relocate() transports data") {
+    InMemTest.currentLocation = Some(InMemLocation(1))
+
+    execute {
+      Unit =>
+
+      // start with a clean slate
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
         // create a Ref
         val ref = Ref(InMemLocation(1), "test string one")
@@ -34,13 +104,13 @@ class InMemTest extends FunSuite {
   }
 
   test("explicit swap() transports data") {
-    InMemTest.currentLocation = None
+    InMemTest.currentLocation = Some(InMemLocation(1))
 
-    executeWith(InMemTest.getTransporter(InMemLocation(1))) {
+    execute {
       Unit =>
 
       // start with a clean slate
-        assert(InMemTest.currentLocation === None)
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
         // create a Ref
         val ref1 = Ref(InMemLocation(1), "test string one")
@@ -82,13 +152,13 @@ class InMemTest extends FunSuite {
   }
 
   test("explicit moveTo transports execution") {
-    InMemTest.currentLocation = None
+    InMemTest.currentLocation = Some(InMemLocation(1))
 
-    executeWith(InMemTest.getTransporter(InMemLocation(1))) {
+    execute {
       Unit =>
 
       // start with a clean slate
-        assert(InMemTest.currentLocation === None)
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
         // move to a location
         Swarm.moveTo(InMemLocation(2))
@@ -103,13 +173,13 @@ class InMemTest extends FunSuite {
   }
 
   test("ref access transports execution") {
-    InMemTest.currentLocation = None
+    InMemTest.currentLocation = Some(InMemLocation(1))
 
-    executeWith(InMemTest.getTransporter(InMemLocation(1))) {
+    execute {
       Unit =>
 
       // start with a clean slate
-        assert(InMemTest.currentLocation === None)
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
         // create a Ref
         val ref1 = Ref(InMemLocation(1), "test string one")
@@ -133,12 +203,18 @@ class InMemTest extends FunSuite {
 }
 
 object InMemTest {
+  val tx0: InMemTransporter = new InMemTransporter(InMemLocation(0))
   val tx1: InMemTransporter = new InMemTransporter(InMemLocation(1))
   val tx2: InMemTransporter = new InMemTransporter(InMemLocation(2))
 
   def getTransporter(location: Location): InMemTransporter = location match {
     case InMemLocation(1) => tx1
     case InMemLocation(2) => tx2
+  }
+
+  def getTransporter: InMemTransporter = currentLocation match {
+    case Some(tx) => getTransporter(tx)
+    case None => tx0
   }
 
   // keeps track of the current in-memory location
@@ -148,6 +224,9 @@ object InMemTest {
 case class InMemLocation(val id: Int) extends Location
 
 class InMemTransporter(val local: InMemLocation) extends Transporter {
+
+  override def isLocal(location: Location) = local == location
+
   override def transport(f: Unit => Bee, destination: Location) {
     InMemTest.getTransporter(destination).receive(f)
   }
@@ -155,7 +234,7 @@ class InMemTransporter(val local: InMemLocation) extends Transporter {
   def receive(f: Unit => Bee) {
     // update the current in-memory location
     InMemTest.currentLocation = Some(local)
-    
+
     Swarm.continue(f)(this)
   }
 }

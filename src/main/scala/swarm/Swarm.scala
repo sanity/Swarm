@@ -3,6 +3,8 @@ package swarm
 import util.continuations._
 
 trait Transporter {
+  def isLocal(location: Location): Boolean
+
   def transport(f: (Unit => Bee), destination: Location): Unit
 }
 
@@ -59,12 +61,27 @@ object Swarm {
     Swapped(relocate(ref1, ref2.location), relocate(ref2, ref1.location))
   }
 
+  def dereference(ref: Ref[_]) = shift {
+    c: (Unit => Bee) =>
+      RefBee(c, ref)
+  }
+
+  private[this] val demand = collection.mutable.HashMap[Long, Int]()
+
+  def getDemand(ref: Ref[_]): Int = {
+    demand.getOrElse(ref.uid, 0)
+  }
+
   /**
    * Executes the continuation if it should be run locally, otherwise
    * relocates to the given destination
    */
   def execute(bee: Bee)(implicit tx: Transporter) {
     bee match {
+      case RefBee(f, ref) if (tx.isLocal(ref.location)) => Swarm.continue(f)
+      case RefBee(f, ref) =>
+        demand(ref.uid) = getDemand(ref) + 1
+        tx.transport(f, ref.location)
       case IsBee(f, destination) => tx.transport(f, destination)
       case NoBee() =>
     }
