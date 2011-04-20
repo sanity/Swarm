@@ -82,6 +82,7 @@ object Swarm {
       case RefBee(f, ref) =>
         demand(ref.uid) = getDemand(ref) + 1
         tx.transport(f, ref.location)
+      case IsBee(f, destination) if (tx.isLocal(destination)) => Swarm.continue(f)
       case IsBee(f, destination) => tx.transport(f, destination)
       case NoBee() =>
     }
