@@ -19,7 +19,8 @@ class InMemTest extends FunSuite {
       assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
       val newRef = Swarm.relocate(ref, InMemLocation(2))
-      
+
+
       assert(newRef() === "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
@@ -51,8 +52,12 @@ class InMemTest extends FunSuite {
 
       assert(swapped.ref1() === "test string one")
       assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+      assert(ref1() === "test string one")
+      assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
       assert(swapped.ref2() === "test string two")
+      assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+      assert(ref2() === "test string two")
       assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
       NoBee()

@@ -1,14 +1,24 @@
 package swarm
 
 import scala.collection.mutable._
+import swarm.Swarm.swarm
 
 object Store {
   var nextUid = 0
 
-  val map = new HashMap[Long, Any]()
+  val store = new HashMap[Long, Any]()
 
-  def apply[T](t: Class[T], key: Long): Option[T] = {
-    map.get(key).asInstanceOf[Option[T]]
+  case class Relocated(val uid: Long, val location: Location)
+  val relocated = new HashMap[Long, Relocated]()
+
+  def apply[A](t: Class[A], uid: Long): Option[A]@swarm = {
+    store.get(uid) match {
+      case Some(x) => x match {
+        case ref: Ref[A] => Some(ref())
+        case a: A => Some(a)
+      }
+      case None => None
+    }
   }
 
   def save(value: Any): Long = {
@@ -19,10 +29,6 @@ object Store {
   }
 
   def update(key: Long, value: Any): Unit = {
-    map.put(key, value)
-  }
-
-  def remove(key: Long) {
-    map.remove(key)
+    store.put(key, value)
   }
 }

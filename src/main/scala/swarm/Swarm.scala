@@ -44,11 +44,13 @@ object Swarm {
   def relocate[A](ref: Ref[A], destination: Location): Ref[A]@swarm = {
     val refValue = ref()
 
-    moveTo(ref.location)
-    Store.remove(ref.uid) // TODO: don't simply remove the old value -> create a way to reference the new one
-
     moveTo(destination)
-    new Ref[A](ref.typeClass, destination, Store.save(refValue))
+    val newRef = new Ref[A](ref.typeClass, destination, Store.save(refValue))
+
+    moveTo(ref.location)
+    Store.update(ref.uid, newRef)
+
+    newRef
   }
 
   case class Swapped[A, B](ref1: Ref[A], ref2: Ref[B])
