@@ -50,7 +50,8 @@ object Swarm {
     val newRef = new Ref[A](ref.typeClass, destination, Store.save(refValue))
 
     moveTo(ref.location)
-    Store.update(ref.uid, newRef)
+    Store.relocate(ref.uid, newRef)
+    ref.relocate(newRef.uid, newRef.location)
 
     newRef
   }
@@ -58,7 +59,9 @@ object Swarm {
   case class Swapped[A, B](ref1: Ref[A], ref2: Ref[B])
 
   def swap[A, B](ref1: Ref[A], ref2: Ref[B]): Swapped[A, B]@swarm = {
-    Swapped(relocate(ref1, ref2.location), relocate(ref2, ref1.location))
+    val location1: Location = ref1.location
+    val location2: Location = ref2.location
+    Swapped(relocate(ref1, location2), relocate(ref2, location1))
   }
 
   def dereference(ref: Ref[_]) = shift {
@@ -78,7 +81,14 @@ object Swarm {
    */
   def execute(bee: Bee)(implicit tx: Transporter) {
     bee match {
-      case RefBee(f, ref) if (tx.isLocal(ref.location)) => Swarm.continue(f)
+      case RefBee(f, ref) if (tx.isLocal(ref.location)) =>
+        if (!Store.store.contains(ref.uid)) {
+          val newRef = Store.relocated(ref.uid)
+          ref.relocate(newRef.uid, newRef.location)
+          tx.transport(f, ref.location)
+        } else {
+          Swarm.continue(f)
+        }
       case RefBee(f, ref) =>
         demand(ref.uid) = getDemand(ref) + 1
         tx.transport(f, ref.location)

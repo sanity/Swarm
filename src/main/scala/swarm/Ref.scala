@@ -8,8 +8,20 @@ Represents a reference to an object which may reside on a remote computer.
  the thread being serialized and moved to the remote computer, before
  returning the object.
  **/
-@serializable class Ref[A](val typeClass: Class[A], val location: Location, val uid: Long) {
-  def apply() = {
+@serializable class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) {
+
+  private[this] var _location = initLoc
+  private[this] var _uid = initUid
+
+  def location: Location = _location
+  def uid: Long = _uid
+
+  def relocate(newUid: Long, newLocation: Location) {
+    _uid = newUid
+    _location = newLocation
+  }
+
+  def apply(): A@swarm = {
     Swarm.dereference(this)
     Store(typeClass, uid).getOrElse(throw new RuntimeException("Unable to find item with uid " + uid + " in local store"))
   }
