@@ -114,7 +114,6 @@ class InMemTest extends FunSuite {
 
         // create a Ref
         val ref1 = Ref(InMemLocation(1), "test string one")
-        val ref1Clone = new Ref(ref1.typeClass, ref1.location, ref1.uid)
         assert(InMemTest.currentLocation === Some(InMemLocation(1)))
 
         // create another Ref
@@ -147,10 +146,6 @@ class InMemTest extends FunSuite {
         // ensure the other old Ref takes us to the appropriate location
         assert(ref2() === "test string two")
         assert(InMemTest.currentLocation === Some(InMemLocation(1)))
-
-        // ensure that "other" references get updated
-        ref1Clone()
-        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
 
         NoBee()
     }
