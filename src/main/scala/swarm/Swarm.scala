@@ -82,7 +82,7 @@ object Swarm {
   def execute(bee: Bee)(implicit tx: Transporter) {
     bee match {
       case RefBee(f, ref) if (tx.isLocal(ref.location)) =>
-        if (!Store.store.contains(ref.uid)) {
+        if (!Store.exists(ref.uid)) {
           val newRef = Store.relocated(ref.uid)
           ref.relocate(newRef.uid, newRef.location)
           tx.transport(f, ref.location)
