@@ -2,7 +2,7 @@ package swarm.data
 
 import swarm.Swarm
 import swarm.Swarm.swarm
-import swarm.Location
+import swarm.transport.Location
 
 /**
 Represents a reference to an object which may reside on a remote computer.

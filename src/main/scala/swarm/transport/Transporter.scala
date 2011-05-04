@@ -1,4 +1,12 @@
-package swarm
+package swarm.transport
+
+import swarm.Bee
+
+trait Transporter {
+  def isLocal(location: Location): Boolean
+
+  def transport(f: (Unit => Bee), destination: Location): Unit
+}
 
 /**
  * A concrete implementation of SwarmTransporter which uses sockets for
@@ -7,6 +15,7 @@ package swarm
 object InetTransporter extends Transporter {
 
   import java.net.InetAddress
+  import swarm.Swarm
 
   private[this] val localHost: InetAddress = InetAddress.getLocalHost
   private[this] var _local: Option[InetLocation] = None

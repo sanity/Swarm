@@ -1,7 +1,7 @@
 package swarm.data
 
 import swarm.Swarm.swarm
-import swarm.Location
+import swarm.transport.Location
 
 object Store {
 

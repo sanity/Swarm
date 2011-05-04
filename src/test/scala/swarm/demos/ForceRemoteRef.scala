@@ -2,7 +2,7 @@ package swarm.demos
 
 import swarm.{Swarm, NoBee}
 import swarm.data.Ref
-import swarm.{Transporter, InetTransporter}
+import swarm.transport.{Transporter, InetTransporter}
 
 object ForceRemoteRef {
   def main(args: Array[String]) = {

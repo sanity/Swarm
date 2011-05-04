@@ -4,6 +4,7 @@ import org.scalatest.FunSuite
 import util.continuations._
 import swarm.Swarm.{Swapped, swarm}
 import swarm.data.Ref
+import swarm.transport.{Location, Transporter}
 
 class InMemTest extends FunSuite {
 

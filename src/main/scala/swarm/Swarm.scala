@@ -2,12 +2,7 @@ package swarm
 
 import util.continuations._
 import swarm.data.{Store, Ref}
-
-trait Transporter {
-  def isLocal(location: Location): Boolean
-
-  def transport(f: (Unit => Bee), destination: Location): Unit
-}
+import swarm.transport.{Transporter, Location}
 
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
