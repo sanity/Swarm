@@ -1,6 +1,7 @@
 package swarm
 
 import util.continuations._
+import swarm.data.{Store, Ref}
 
 trait Transporter {
   def isLocal(location: Location): Boolean

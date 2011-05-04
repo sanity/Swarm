@@ -1,6 +1,8 @@
-package swarm
+package swarm.data
 
+import swarm.Swarm
 import swarm.Swarm.swarm
+import swarm.Location
 
 /**
 Represents a reference to an object which may reside on a remote computer.
@@ -14,6 +16,7 @@ Represents a reference to an object which may reside on a remote computer.
   private[this] var _uid = initUid
 
   def location: Location = _location
+
   def uid: Long = _uid
 
   def relocate(newUid: Long, newLocation: Location) {
