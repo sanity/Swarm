@@ -22,7 +22,7 @@ class SwarmProject(info: ProjectInfo) extends DefaultProject(info) with AutoComp
           actionConstructor(getClass(args(0)), args.toList.tail.toArray)
         else
           task {
-            Some("Usage: Listen|ForceRemoteRef|ExplicitMoveTo1 <integer> <string>")
+            Some("Usage: Listen|PrintABC|ForceRemoteRef|ExplicitMoveTo1 <integer> <string>")
           }
     }
 
