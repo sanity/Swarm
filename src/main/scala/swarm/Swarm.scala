@@ -20,6 +20,10 @@ object Swarm {
     execute(reset(f()))
   }
 
+  def continueSwarm(f: Unit => Bee@swarm)(implicit tx: Transporter) {
+    execute(reset(f()))
+  }
+
   /**
    * Start a new Swarm task (will return immediately as task is started in a
    * new thread)
