@@ -44,3 +44,27 @@ object Ref {
     Some(ref())
   }
 }
+
+object RefMap {
+
+  private[this] var _local: Location = _
+  def local(location: Location) {
+    _local = location
+  }
+
+  val refMap = new collection.mutable.HashMap[String, Ref[_]]()
+
+  def put[A](id: String, value: A)(implicit m: scala.reflect.Manifest[A]) {
+    val uid = Store.save(value)
+    val ref = new Ref[A](m.erasure.asInstanceOf[Class[A]], _local, uid)
+    refMap.put(id, ref)
+   }
+
+  def get[A](clazz: Class[A], id: String): Option[A]@swarm = {
+    if (refMap.contains(id)) {
+      Some((refMap(id).asInstanceOf[Ref[A]])())
+    } else {
+      None
+    }
+  }
+}
