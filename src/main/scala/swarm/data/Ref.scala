@@ -10,7 +10,7 @@ Represents a reference to an object which may reside on a remote computer.
  the thread being serialized and moved to the remote computer, before
  returning the object.
  **/
-@serializable class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) {
+class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) extends Serializable {
 
   private[this] var _location = initLoc
   private[this] var _uid = initUid

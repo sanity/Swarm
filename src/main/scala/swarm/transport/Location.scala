@@ -1,6 +1,6 @@
 package swarm.transport
 
-@serializable trait Location
+trait Location extends Serializable
 
 case class InetLocation(val address: java.net.InetAddress, val port: Short) extends Location {
   override def equals(other: Any) = {

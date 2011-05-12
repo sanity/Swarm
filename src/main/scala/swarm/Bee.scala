@@ -1,6 +1,6 @@
 package swarm
 
-@serializable sealed trait Bee
+sealed trait Bee extends Serializable
 
 case class NoBee() extends Bee
 

@@ -3,12 +3,11 @@ import sbt._
 
 class SwarmProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
 
-  val scalatest = "org.scalatest" % "scalatest" % "1.3"
+  val scalatest = "org.scalatest" % "scalatest_2.9.0" % "1.4.1"
 
-  val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.8.1")
+  val continuationsPlugin = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.0")
 
-  override def compileOptions =
-    super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
+  override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
 
   def getClass(arg: String) =
     if (arg.split(".").size == 0)
