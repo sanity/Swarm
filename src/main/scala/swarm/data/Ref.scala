@@ -34,6 +34,7 @@ object Ref {
 
   import swarm.Swarm.swarm
 
+  // TODO "broadcast" the new Ref by creating a corresponding Ref (holding this location) in all other Swarm locations
   def apply[A](location: Location, value: A)(implicit m: scala.reflect.Manifest[A]): Ref[A]@swarm = {
     Swarm.moveTo(location)
     val uid = Store.save(value)
@@ -45,6 +46,7 @@ object Ref {
   }
 }
 
+// TODO change RefMap into a type constructor (similar ot Ref) so users can have maps of arbitrary type
 object RefMap {
 
   private[this] var _local: Location = _
@@ -54,6 +56,7 @@ object RefMap {
 
   val refMap = new collection.mutable.HashMap[String, Ref[_]]()
 
+  // TODO "broadcast" the put by creating a corresponding Ref (holding this location) in all other Swarm locations
   def put[A](id: String, value: A)(implicit m: scala.reflect.Manifest[A]) {
     val uid = Store.save(value)
     val ref = new Ref[A](m.erasure.asInstanceOf[Class[A]], _local, uid)

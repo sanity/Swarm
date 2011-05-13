@@ -3,6 +3,7 @@ package swarm.data
 import swarm.Swarm.swarm
 import swarm.transport.Location
 
+// TODO make this contention safe
 object Store {
 
   private[this] var repository = SimpleRepository
