@@ -71,7 +71,7 @@ class RefMap[A](typeClass: Class[A]) {
       // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
       val ref: Ref[A] = Ref(location, value)
       map(key) = ref
-      // TODO for each location in the cluster, add the ref to the local Store
+      // TODO for each location in the cluster, add the ref to the local map
     }
   }
 }
@@ -80,10 +80,23 @@ object RefMap {
 
   val map = new collection.mutable.HashMap[String, RefMap[_]]()
 
+  private[this] var _locations: Option[List[Location]] = None
+
+  def locations(locations: List[Location]) {
+    _locations = Some(locations)
+  }
+
   def apply[A](typeClass: Class[A], key: String) = {
     val refMap: RefMap[A] = new RefMap(typeClass)
-    map.put(key, refMap)
-    refMap
     // TODO for each location in the cluster, add the refMap to the local map
+    // the following block is very continuation unfriendly
+    /*_locations.map {
+      locs => locs.map {
+        location =>
+          Swarm.moveTo(location)
+          map.put(key, refMap)
+      }
+    }    */
+    refMap
   }
 }
