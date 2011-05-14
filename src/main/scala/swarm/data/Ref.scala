@@ -78,22 +78,7 @@ class RefMap[A](typeClass: Class[A]) {
 }
 
 object RefMap {
-
   def apply[A](typeClass: Class[A]) = {
     new RefMap(typeClass)
   }
 }
-
-/*private[this] var _locations: List[Location] = _
-
-def locations(locations: List[Location]) {
-_locations = locations
-}
-
-private[this] var _local: Location = _
-
-def local(location: Location) = _local = location
-
-// TODO make mapStore more generic, to hold arbitrary values rather than List[String].  This might call for a RefMap type constructor
-val mapStore = new collection.mutable.HashMap[String, Ref[String]]()
-*/
