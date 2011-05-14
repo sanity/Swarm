@@ -93,19 +93,10 @@ object RefMap {
   def locations = _locations
 
   def apply[A](typeClass: Class[A], key: String): RefMap[A]@swarm = {
-    if (map.contains(key)) {
-      map(key).asInstanceOf[RefMap[A]]
-    } else {
+    if (!map.contains(key)) {
       val refMap: RefMap[A] = new RefMap(typeClass, key)
-
-      // TODO for each location in the cluster, add the refMap to the local map
-      Swarm.moveTo(_locations(0))
       map(key) = refMap
-
-      Swarm.moveTo(_locations(1))
-      map(key) = refMap
-
-      refMap
     }
+    map(key).asInstanceOf[RefMap[A]]
   }
 }
