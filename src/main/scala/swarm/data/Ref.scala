@@ -51,40 +51,49 @@ object Ref {
   }
 }
 
-object RefMap {
+class RefMap[A](typeClass: Class[A]) {
 
-  private[this] var _locations: List[Location] = _
+  val map = new collection.mutable.HashMap[String, Ref[A]]()
 
-  def locations(locations: List[Location]) {
-    _locations = locations
-  }
-
-  private[this] var _local: Location = _
-
-  def local(location: Location) = _local = location
-
-  // TODO make mapStore more generic, to hold arbitrary values rather than List[String].  This might call for a RefMap type constructor
-  val mapStore = new collection.mutable.HashMap[String, Ref[String]]()
-
-  def put(mapId: String, newValue: String): Unit@swarm = {
-    if (mapStore.contains(mapId)) {
-      // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
-      val ref: Ref[String] = mapStore(mapId)
-      ref.update(newValue)
-    } else {
-      // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
-      val ref: Ref[String] = Ref(_local, newValue)
-      mapStore(mapId) = ref
-
-      // TODO for each location, add ref to the local Store
-    }
-  }
-
-  def get[A](clazz: Class[A], id: String): Option[A]@swarm = {
-    if (mapStore.contains(id)) {
-      Some((mapStore(id).asInstanceOf[Ref[A]])())
+  def get(key: String): Option[A]@swarm = {
+    if (map.contains(key)) {
+      Some(map(key)())
     } else {
       None
     }
   }
+
+  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+    if (map.contains(key)) {
+      // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
+      val ref: Ref[A] = map(key)
+      ref.update(value)
+    } else {
+      // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
+      val ref: Ref[A] = Ref(location, value)
+      map(key) = ref
+      // TODO for each location in the cluster, add the ref to the local Store
+    }
+  }
 }
+
+object RefMap {
+
+  def apply[A](typeClass: Class[A]) = {
+    new RefMap(typeClass)
+  }
+}
+
+/*private[this] var _locations: List[Location] = _
+
+def locations(locations: List[Location]) {
+_locations = locations
+}
+
+private[this] var _local: Location = _
+
+def local(location: Location) = _local = location
+
+// TODO make mapStore more generic, to hold arbitrary values rather than List[String].  This might call for a RefMap type constructor
+val mapStore = new collection.mutable.HashMap[String, Ref[String]]()
+*/

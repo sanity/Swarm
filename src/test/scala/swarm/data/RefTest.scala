@@ -15,23 +15,18 @@ class RefTest extends FunSuite {
   test("RefMap") {
     execute {
       Unit =>
-        RefMap.local(InMemLocation(1))
-        RefMap.locations(List(InMemLocation(2)))
+        val stringsMap: RefMap[String] = RefMap(classOf[String])
+
+        stringsMap.put(InMemLocation(1), "one", "1")
+
+        stringsMap.put(InMemLocation(2), "two", "2")
 
         Swarm.moveTo(InMemLocation(1))
-        RefMap.put("one", "1")
-        Swarm.moveTo(InMemLocation(2))
-        RefMap.put("two", "2")
-
-        val string1: Option[String] = RefMap.get(classOf[String], "one")
-        Swarm.moveTo(InMemLocation(1))
-        assert(Some("1") === string1)
+        assert(Some("1") === stringsMap.get("one"))
         assert(Some(InMemLocation(1)) === InMemTest.currentLocation)
 
-        val string2: Option[String] = RefMap.get(classOf[String], "two")
-        assert(Some("2") === string2)
-        // TODO this won't work because there's only one RefMap in this test (since we're using in-memory locations)
-        //assert(Some(InMemLocation(2)) === InMemTest.currentLocation)
+        assert(Some("2") === stringsMap.get("two"))
+        assert(Some(InMemLocation(2)) === InMemTest.currentLocation)
 
         NoBee()
     }
