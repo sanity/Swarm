@@ -28,6 +28,11 @@ class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) 
     Swarm.dereference(this)
     Store(typeClass, uid).getOrElse(throw new RuntimeException("Unable to find item with uid " + uid + " in local store"))
   }
+
+  def update(newValue: A): Unit@swarm = {
+    Swarm.dereference(this)
+    Store.update(uid, newValue)
+  }
 }
 
 object Ref {
@@ -46,26 +51,38 @@ object Ref {
   }
 }
 
-// TODO change RefMap into a type constructor (similar ot Ref) so users can have maps of arbitrary type
 object RefMap {
 
-  private[this] var _local: Location = _
-  def local(location: Location) {
-    _local = location
+  private[this] var _locations: List[Location] = _
+
+  def locations(locations: List[Location]) {
+    _locations = locations
   }
 
-  val refMap = new collection.mutable.HashMap[String, Ref[_]]()
+  private[this] var _local: Location = _
 
-  // TODO "broadcast" the put by creating a corresponding Ref (holding this location) in all other Swarm locations
-  def put[A](id: String, value: A)(implicit m: scala.reflect.Manifest[A]) {
-    val uid = Store.save(value)
-    val ref = new Ref[A](m.erasure.asInstanceOf[Class[A]], _local, uid)
-    refMap.put(id, ref)
-   }
+  def local(location: Location) = _local = location
+
+  // TODO make mapStore more generic, to hold arbitrary values rather than List[String].  This might call for a RefMap type constructor
+  val mapStore = new collection.mutable.HashMap[String, Ref[String]]()
+
+  def put(mapId: String, newValue: String): Unit@swarm = {
+    if (mapStore.contains(mapId)) {
+      // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
+      val ref: Ref[String] = mapStore(mapId)
+      ref.update(newValue)
+    } else {
+      // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
+      val ref: Ref[String] = Ref(_local, newValue)
+      mapStore(mapId) = ref
+
+      // TODO for each location, add ref to the local Store
+    }
+  }
 
   def get[A](clazz: Class[A], id: String): Option[A]@swarm = {
-    if (refMap.contains(id)) {
-      Some((refMap(id).asInstanceOf[Ref[A]])())
+    if (mapStore.contains(id)) {
+      Some((mapStore(id).asInstanceOf[Ref[A]])())
     } else {
       None
     }

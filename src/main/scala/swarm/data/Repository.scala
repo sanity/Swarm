@@ -22,6 +22,8 @@ object SimpleRepository extends Repository {
     nextUid
   }
 
+  def update[A](uid: Long, newValue: A) = store.put(uid, newValue)
+
   def remove(uid: Long) = store.remove(uid)
 
   def exists(uid: Long): Boolean = store.contains(uid)

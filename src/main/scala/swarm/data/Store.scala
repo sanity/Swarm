@@ -25,5 +25,9 @@ object Store {
     relocated.put(key, newRef)
   }
 
+  def update[A](key: Long, newValue: A): Unit = {
+    repository.update(key, newValue)
+  }
+
   def exists(key: Long) = repository.exists(key)
 }
