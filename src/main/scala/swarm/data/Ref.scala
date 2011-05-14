@@ -50,7 +50,7 @@ object Ref {
   }
 }
 
-class RefMap[A](typeClass: Class[A]) {
+class RefMap[A](typeClass: Class[A], refMapKey: String) {
 
   val map = new collection.mutable.HashMap[String, Ref[A]]()
 
@@ -73,10 +73,10 @@ class RefMap[A](typeClass: Class[A]) {
 
       // TODO for each location in the cluster, add the ref to the local map
       Swarm.moveTo(RefMap.locations(0))
-      map(key) = ref
+      RefMap(typeClass, refMapKey).map(key) = ref
 
       Swarm.moveTo(RefMap.locations(1))
-      map(key) = ref
+      RefMap(typeClass, refMapKey).map(key) = ref
     }
   }
 }
@@ -93,20 +93,20 @@ object RefMap {
 
   def locations = _locations
 
-  def apply[A](typeClass: Class[A], key: String) = {
-    val refMap: RefMap[A] = new RefMap(typeClass)
+  def apply[A](typeClass: Class[A], key: String): RefMap[A]@swarm = {
+    if (map.contains(key)) {
+      map(key).asInstanceOf[RefMap[A]]
+    } else {
+      val refMap: RefMap[A] = new RefMap(typeClass, key)
 
-    // TODO for each location in the cluster, add the refMap to the local map
-    Swarm.moveTo(_locations(0))
-    map(key) = refMap
+      // TODO for each location in the cluster, add the refMap to the local map
+      Swarm.moveTo(_locations(0))
+      map(key) = refMap
 
-    Swarm.moveTo(_locations(1))
-    map(key) = refMap
+      Swarm.moveTo(_locations(1))
+      map(key) = refMap
 
-    refMap
-  }
-
-  def get(key: String) = {
-    map(key)
+      refMap
+    }
   }
 }

@@ -31,7 +31,7 @@ class RefTest extends FunSuite {
         assert(Some("2") === stringsMap.get("two"))
         assert(Some(InMemLocation(2)) === InMemTest.currentLocation)
 
-        assert(Some("1") === RefMap.get("strings").get("one"))
+        assert(Some("1") === RefMap(classOf[String], "strings").get("one"))
         assert(Some(InMemLocation(1)) === InMemTest.currentLocation)
 
         NoBee()
