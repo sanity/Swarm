@@ -69,14 +69,13 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
       ref.update(value)
     } else {
       // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
-      val ref: Ref[A] = Ref(location, value)
-
+  
       // TODO for each location in the cluster, add the ref to the local map
       Swarm.moveTo(RefMap.locations(0))
-      RefMap(typeClass, refMapKey).map(key) = ref
+      RefMap(typeClass, refMapKey).map(key) = Ref(location, value)
 
       Swarm.moveTo(RefMap.locations(1))
-      RefMap(typeClass, refMapKey).map(key) = ref
+      RefMap(typeClass, refMapKey).map(key) = Ref(location, value)
     }
   }
 }
