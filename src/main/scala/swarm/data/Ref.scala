@@ -39,7 +39,6 @@ object Ref {
 
   import swarm.Swarm.swarm
 
-  // TODO "broadcast" the new Ref by creating a corresponding Ref (holding this location) in all other Swarm locations
   def apply[A](location: Location, value: A)(implicit m: scala.reflect.Manifest[A]): Ref[A]@swarm = {
     Swarm.moveTo(location)
     val uid = Store.save(value)
@@ -78,7 +77,13 @@ class RefMap[A](typeClass: Class[A]) {
 }
 
 object RefMap {
-  def apply[A](typeClass: Class[A]) = {
-    new RefMap(typeClass)
+
+  val map = new collection.mutable.HashMap[String, RefMap[_]]()
+
+  def apply[A](typeClass: Class[A], key: String) = {
+    val refMap: RefMap[A] = new RefMap(typeClass)
+    map.put(key, refMap)
+    refMap
+    // TODO for each location in the cluster, add the refMap to the local map
   }
 }

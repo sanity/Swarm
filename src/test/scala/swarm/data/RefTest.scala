@@ -15,7 +15,7 @@ class RefTest extends FunSuite {
   test("RefMap") {
     execute {
       Unit =>
-        val stringsMap: RefMap[String] = RefMap(classOf[String])
+        val stringsMap: RefMap[String] = RefMap(classOf[String], "strings")
 
         stringsMap.put(InMemLocation(1), "one", "1")
 
