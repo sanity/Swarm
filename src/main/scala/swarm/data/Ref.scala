@@ -50,7 +50,7 @@ object Ref {
   }
 }
 
-class RefMap[A](typeClass: Class[A], refMapKey: String) {
+class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
 
   val map = new collection.mutable.HashMap[String, Ref[A]]()
 
