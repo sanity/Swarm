@@ -15,6 +15,9 @@ class RefTest extends FunSuite {
   test("RefMap") {
     execute {
       Unit =>
+
+        RefMap.locations = List(InMemLocation(1), InMemLocation(2))
+
         val stringsMap: RefMap[String] = RefMap(classOf[String], "strings")
 
         stringsMap.put(InMemLocation(1), "one", "1")
@@ -27,6 +30,9 @@ class RefTest extends FunSuite {
 
         assert(Some("2") === stringsMap.get("two"))
         assert(Some(InMemLocation(2)) === InMemTest.currentLocation)
+
+        assert(Some("1") === RefMap.get("strings").get("one"))
+        assert(Some(InMemLocation(1)) === InMemTest.currentLocation)
 
         NoBee()
     }

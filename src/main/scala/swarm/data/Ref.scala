@@ -1,8 +1,8 @@
 package swarm.data
 
-import swarm.Swarm
 import swarm.Swarm.swarm
 import swarm.transport.Location
+import swarm.{NoBee, Swarm}
 
 /**
 Represents a reference to an object which may reside on a remote computer.
@@ -70,8 +70,13 @@ class RefMap[A](typeClass: Class[A]) {
     } else {
       // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
       val ref: Ref[A] = Ref(location, value)
-      map(key) = ref
+
       // TODO for each location in the cluster, add the ref to the local map
+      Swarm.moveTo(RefMap.locations(0))
+      map(key) = ref
+
+      Swarm.moveTo(RefMap.locations(1))
+      map(key) = ref
     }
   }
 }
@@ -80,23 +85,28 @@ object RefMap {
 
   val map = new collection.mutable.HashMap[String, RefMap[_]]()
 
-  private[this] var _locations: Option[List[Location]] = None
+  private[this] var _locations: List[Location] = _
 
-  def locations(locations: List[Location]) {
-    _locations = Some(locations)
+  def locations_=(locations: List[Location]) {
+    _locations = locations
   }
+
+  def locations = _locations
 
   def apply[A](typeClass: Class[A], key: String) = {
     val refMap: RefMap[A] = new RefMap(typeClass)
+
     // TODO for each location in the cluster, add the refMap to the local map
-    // the following block is very continuation unfriendly
-    /*_locations.map {
-      locs => locs.map {
-        location =>
-          Swarm.moveTo(location)
-          map.put(key, refMap)
-      }
-    }    */
+    Swarm.moveTo(_locations(0))
+    map(key) = refMap
+
+    Swarm.moveTo(_locations(1))
+    map(key) = refMap
+
     refMap
+  }
+
+  def get(key: String) = {
+    map(key)
   }
 }
