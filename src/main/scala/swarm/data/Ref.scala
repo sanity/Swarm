@@ -2,7 +2,7 @@ package swarm.data
 
 import swarm.Swarm.swarm
 import swarm.transport.Location
-import swarm.{NoBee, Swarm}
+import swarm.Swarm
 
 /**
 Represents a reference to an object which may reside on a remote computer.
@@ -69,13 +69,13 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
       ref.update(value)
     } else {
       // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
-  
+
       // TODO for each location in the cluster, add the ref to the local map
       Swarm.moveTo(RefMap.locations(0))
-      RefMap(typeClass, refMapKey).map(key) = Ref(location, value)
+      RefMap.put(refMapKey, location, key, value)
 
       Swarm.moveTo(RefMap.locations(1))
-      RefMap(typeClass, refMapKey).map(key) = Ref(location, value)
+      RefMap.put(refMapKey, location, key, value)
     }
   }
 }
@@ -98,5 +98,9 @@ object RefMap {
       map(key) = refMap
     }
     map(key).asInstanceOf[RefMap[A]]
+  }
+
+  def put[A](refMapKey: String, location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+    map(refMapKey).map(key) = Ref(location, value)
   }
 }
