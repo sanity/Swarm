@@ -3,6 +3,10 @@ package swarm.data
 import swarm.Swarm.swarm
 import swarm.transport.Location
 
+/**
+ * The Store is the single point of data storage per Swarm node.
+ * A Repository implementation is used to manage the stored data.
+ */
 // TODO make this contention safe
 object Store {
 

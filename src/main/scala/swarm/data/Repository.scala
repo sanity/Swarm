@@ -1,5 +1,9 @@
 package swarm.data
 
+/**
+ * A Repository instance is used by the Store to store and retrieve data.
+ * Potentially different implementations can be used to connect to different types of storage mechanisms.
+ */
 trait Repository {
   def get[A](uid: Long): Option[A]
 
@@ -10,6 +14,10 @@ trait Repository {
   def exists(uid: Long): Boolean
 }
 
+/**
+ * A simple implementation of a Repository.
+ */
+// TODO make this contention safe
 object SimpleRepository extends Repository {
   private[this] var nextUid: Long = 0L
   private[this] val store = new collection.mutable.HashMap[Long, Any]()

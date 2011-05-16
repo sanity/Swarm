@@ -2,6 +2,9 @@ package swarm.transport
 
 import swarm.Bee
 
+/**
+ * A Transporter moves computation to a remote Swarm node.
+ */
 trait Transporter {
   def isLocal(location: Location): Boolean
 
@@ -9,8 +12,7 @@ trait Transporter {
 }
 
 /**
- * A concrete implementation of SwarmTransporter which uses sockets for
- * communication.
+ * A concrete implementation of SwarmTransporter which uses TCP/IP sockets for communication.
  */
 object InetTransporter extends Transporter {
 
