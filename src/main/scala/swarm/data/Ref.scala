@@ -100,13 +100,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
     } else {
       // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
       val ref = Ref(location, value)
-
-      // TODO for each location in the cluster, add the ref to the local map
-      Swarm.moveTo(RefMap.locations(0))
-      RefMap.put(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
-
-      Swarm.moveTo(RefMap.locations(1))
-      RefMap.put(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
+      RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
     }
   }
 }
@@ -140,7 +134,17 @@ object RefMap {
     map(key).asInstanceOf[RefMap[A]]
   }
 
-  def put[A](refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
-    map(refMapKey).asInstanceOf[RefMap[A]].map(key) = tuple
+  def update[A](refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+    update(locations, refMapKey, key, tuple)
+  }
+
+  def update[A](locations: List[Location], refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+    locations match {
+      case Nil =>
+      case location :: moreLocations =>
+        Swarm.moveTo(location)
+        map(refMapKey).asInstanceOf[RefMap[A]].map(key) = tuple
+        update(moreLocations, refMapKey, key, tuple)
+    }
   }
 }
