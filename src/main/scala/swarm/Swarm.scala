@@ -97,4 +97,38 @@ object Swarm {
       case NoBee() =>
     }
   }
+
+  private[this] val futureValues = new collection.mutable.HashMap[String, Future]()
+
+  def futureValue(uuid: String, value: Any) {
+    futureValues.get(uuid).map {
+      futureValue =>
+        futureValue.value = value
+    }
+  }
+
+  def future(uuid: String): Future = {
+    val future: Future = new Future
+    futureValues(uuid) = future
+    future
+  }
+}
+
+class Future(private var _value: Any) {
+
+  def value = _value
+
+  def value_=(value: Any) {
+    synchronized {
+      _value = value
+      notify
+    }
+  }
+
+  def get: Any = {
+    synchronized {
+      wait
+      value
+    }
+  }
 }
