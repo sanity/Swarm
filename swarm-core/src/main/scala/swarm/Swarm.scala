@@ -1,9 +1,8 @@
 package swarm
 
+import data.{Store, Ref}
+import transport._
 import util.continuations._
-import swarm.data.{Store, Ref}
-import swarm.transport.{Transporter, Location}
-
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
  * SwarmTransporter, which defines how continuations are transported
@@ -28,12 +27,30 @@ object Swarm {
    * Start a new Swarm task (will return immediately as task is started in a
    * new thread)
    */
-  def spawn(f: Unit => Bee@swarm)(implicit tx: Transporter) {
+  def spawn(f: Unit => Any@swarm)(implicit tx: Transporter) {
     val thread = new Thread() {
-      override def run() = execute(reset(f()))
+      override def run() = execute(reset {
+        f()
+        NoBee()
+      })
     }
     thread.start()
   }
+
+  def spawnAndReturn(f: Unit => Any@swarm)(implicit tx: Transporter, local: Location) = {
+    val uuid = java.util.UUID.randomUUID.toString
+    val future = Swarm.future(uuid)
+    // TODO start the future here as a thread
+    Swarm.spawn(Unit => {
+      val x = f()
+      Swarm.moveTo(local)
+      Swarm.futureValue(uuid, x)
+      NoBee()
+    })(tx)
+    // TODO join the future thread here
+    future.get
+  }
+
 
   /**
    * Relocates the code to the given destination
