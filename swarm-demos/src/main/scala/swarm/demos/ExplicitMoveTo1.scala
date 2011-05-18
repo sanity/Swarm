@@ -9,15 +9,9 @@ object ExplicitMoveTo1 {
 
     implicit val tx: Transporter = InetTransporter
 
-    InetTransporter.listen(java.lang.Short.parseShort(args(0)));
+    InetTransporter.listen(9998)
 
-    if (args.length > 1 && args(1) == "start") {
-      Swarm.spawn(emt1Thread);
-    }
-
-    while (true) {
-      Thread.sleep(1000);
-    }
+    Swarm.continueSwarm(emt1Thread)
   }
 
   def emt1Thread(u: Unit): Bee@swarm = {

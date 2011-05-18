@@ -7,13 +7,8 @@ import swarm.transport.{Transporter, InetTransporter}
 object ForceRemoteRef {
   def main(args: Array[String]) = {
     implicit val tx: Transporter = InetTransporter
-    InetTransporter.listen(java.lang.Short.parseShort(args(0)));
-    if (args.length > 1 && args(1) == "start") {
-      Swarm.spawn(frrThread)
-    }
-    while (true) {
-      Thread.sleep(1000)
-    }
+    InetTransporter.listen(9999)
+    Swarm.spawn(frrThread)
   }
 
   def frrThread(u: Unit) = {

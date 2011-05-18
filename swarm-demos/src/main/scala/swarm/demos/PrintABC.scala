@@ -9,7 +9,7 @@ object PrintABC {
   def main(args: Array[String]) = {
     implicit val tx: Transporter = InetTransporter
     InetTransporter.listen(9998);
-    Swarm.spawn(printABC(args(0).toShort))
+    Swarm.spawn(printABC(9997))
   }
 
   def printABC(remotePort: Short)(u: Unit): Bee@swarm = {
