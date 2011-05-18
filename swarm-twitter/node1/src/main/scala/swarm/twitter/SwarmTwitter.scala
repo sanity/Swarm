@@ -23,9 +23,8 @@ class SwarmTwitter extends HttpServlet {
     val x = req.getParameter("x")
     if (x != null) {
       Swarm.spawn {
-        Unit =>
-          val stringsMap = RefMap(classOf[String], "strings")
-          stringsMap.put(local, "x", x)
+        val stringsMap = RefMap(classOf[String], "strings")
+        stringsMap.put(local, "x", x)
       }
       resp.sendRedirect("/")
     }
@@ -37,9 +36,8 @@ class SwarmTwitter extends HttpServlet {
         <h1>SwarmTwitter</h1>
         <div>X:
           {Swarm.spawnAndReturn {
-          Unit =>
-            val stringsMap: RefMap[String] = RefMap(classOf[String], "strings")
-            stringsMap.get("x")
+          val stringsMap: RefMap[String] = RefMap(classOf[String], "strings")
+          stringsMap.get("x")
         }}
         </div>
         <div>

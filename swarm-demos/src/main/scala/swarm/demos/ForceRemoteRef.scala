@@ -11,7 +11,7 @@ object ForceRemoteRef {
     Swarm.spawn(frrThread)
   }
 
-  def frrThread(u: Unit) = {
+  def frrThread = {
     println("1")
     val vLoc = Ref(InetTransporter.local, "test local string")
     println("2")

@@ -12,7 +12,7 @@ object PrintABC {
     Swarm.spawn(printABC(9997))
   }
 
-  def printABC(remotePort: Short)(u: Unit): Bee@swarm = {
+  def printABC(remotePort: Short): Bee@swarm = {
     val local = new InetLocation(java.net.InetAddress.getLocalHost, 9998)
     val remote = new InetLocation(java.net.InetAddress.getLocalHost, remotePort)
 

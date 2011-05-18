@@ -27,26 +27,26 @@ object Swarm {
    * Start a new Swarm task (will return immediately as task is started in a
    * new thread)
    */
-  def spawn(f: Unit => Any@swarm)(implicit tx: Transporter) {
+  def spawn(f: => Any@swarm)(implicit tx: Transporter) {
     val thread = new Thread() {
       override def run() = execute(reset {
-        f()
+        f
         NoBee()
       })
     }
     thread.start()
   }
 
-  def spawnAndReturn(f: Unit => Any@swarm)(implicit tx: Transporter, local: Location) = {
+  def spawnAndReturn(f: => Any@swarm)(implicit tx: Transporter, local: Location) = {
     val uuid = java.util.UUID.randomUUID.toString
     val future = Swarm.future(uuid)
     // TODO start the future here as a thread
-    Swarm.spawn(Unit => {
-      val x = f()
+    Swarm.spawn{
+      val x = f
       Swarm.moveTo(local)
       Swarm.futureValue(uuid, x)
       NoBee()
-    })(tx)
+    }(tx)
     // TODO join the future thread here
     future.get
   }
