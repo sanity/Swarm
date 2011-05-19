@@ -3,6 +3,7 @@ package swarm
 import data.{Store, Ref}
 import transport._
 import util.continuations._
+
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
  * SwarmTransporter, which defines how continuations are transported
@@ -39,12 +40,14 @@ object Swarm {
 
   def spawnAndReturn(f: => Any@swarm)(implicit tx: Transporter, local: Location) = {
     val uuid = java.util.UUID.randomUUID.toString
-    val future = Swarm.future(uuid)
+    val future: Future = new Future
+    futures(uuid) = future
+
     // TODO start the future here as a thread
-    Swarm.spawn{
+    Swarm.spawn {
       val x = f
       Swarm.moveTo(local)
-      Swarm.futureValue(uuid, x)
+      Swarm.futureResult(uuid, x)
       NoBee()
     }(tx)
     // TODO join the future thread here
@@ -115,37 +118,31 @@ object Swarm {
     }
   }
 
-  private[this] val futureValues = new collection.mutable.HashMap[String, Future]()
+  private class Future(private var _value: Any) {
 
-  def futureValue(uuid: String, value: Any) {
-    futureValues.get(uuid).map {
+    def value = _value
+
+    def value_=(value: Any) {
+      synchronized {
+        _value = value
+        notify
+      }
+    }
+
+    def get: Any = {
+      synchronized {
+        wait
+        value
+      }
+    }
+  }
+
+  private[this] val futures = new collection.mutable.HashMap[String, Future]()
+
+  def futureResult(uuid: String, value: Any) {
+    futures.get(uuid).map {
       futureValue =>
         futureValue.value = value
-    }
-  }
-
-  def future(uuid: String): Future = {
-    val future: Future = new Future
-    futureValues(uuid) = future
-    future
-  }
-}
-
-class Future(private var _value: Any) {
-
-  def value = _value
-
-  def value_=(value: Any) {
-    synchronized {
-      _value = value
-      notify
-    }
-  }
-
-  def get: Any = {
-    synchronized {
-      wait
-      value
     }
   }
 }
