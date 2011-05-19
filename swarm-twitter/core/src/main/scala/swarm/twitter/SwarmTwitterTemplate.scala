@@ -2,8 +2,26 @@ package swarm.twitter
 
 import swarm.data.RefMap
 import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
-import swarm.Swarm
 import org.scalatra._
+import swarm.Swarm
+
+object SwarmBridge {
+
+  def get(mapKey: String, key: String)(implicit tx: Transporter, local: Location) = {
+    Swarm.spawnAndReturn {
+      val stringsMap: RefMap[String] = RefMap(classOf[String], mapKey)
+      stringsMap.get(key)
+    }
+  }
+
+  def update(mapKey: String, key: String, value: String)(implicit tx: Transporter, local: Location) {
+    Swarm.spawn {
+      val stringsMap = RefMap(classOf[List[String]], mapKey)
+      val statuses: List[String] = stringsMap.get(key).getOrElse(Nil)
+      stringsMap.put(local, key, value :: statuses)
+    }
+  }
+}
 
 class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
@@ -20,13 +38,28 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
   protected def contextPath = request.getContextPath
 
   get("/") {
-    if (params.contains("x")) {
-      val x = params("x")
-      Swarm.spawn {
-        val stringsMap = RefMap(classOf[String], "strings")
-        stringsMap.put(local, "x", x)
-      }
-      redirect("/")
+    <html>
+      <head>
+        <title>SwarmTwitter</title>
+      </head>
+      <body>
+        <h1>SwarmTwitter</h1>
+        <div>
+          <a href="/jmcdoe">jmcdoe</a>
+        </div>
+        <div>
+          <a href="/maxpower">maxpower</a>
+        </div>
+      </body>
+    </html>
+  }
+
+  get("/:userId") {
+    val userId: String = params("userId")
+    if (params.contains("status")) {
+      val status = params("status")
+      SwarmBridge.update(userId, "statuses", status)
+      redirect("/" + userId)
     } else {
       <html>
         <head>
@@ -34,20 +67,17 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
         </head>
         <body>
           <h1>SwarmTwitter</h1>
-          <div>X:
-            {Swarm.spawnAndReturn {
-            val stringsMap: RefMap[String] = RefMap(classOf[String], "strings")
-            stringsMap.get("x")
-          }}
-          </div>
+          <div>Statuses:</div>
           <div>
-            <a href="/">refresh</a>
+            {SwarmBridge.get(userId, "statuses")}
           </div>
-          <form action="/" method="get">
-            X:
-              <input type="text" size="5" name="x"/>
+            <hr/>
+          <form action={"/" + userId} method="get">
+            Status:
+              <input type="text" size="5" name="status"/>
               <input type="submit" value="apply"/>
           </form>
+          <a href="/">home</a>
         </body>
       </html>
     }

@@ -143,7 +143,7 @@ object RefMap {
       case Nil =>
       case location :: moreLocations =>
         Swarm.moveTo(location)
-        map(refMapKey).asInstanceOf[RefMap[A]].map(key) = tuple
+        RefMap(tuple._1, refMapKey).map(key) = tuple
         update(moreLocations, refMapKey, key, tuple)
     }
   }
