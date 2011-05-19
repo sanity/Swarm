@@ -9,8 +9,8 @@ object SwarmBridge {
 
   def get(mapKey: String, key: String)(implicit tx: Transporter, local: Location) = {
     Swarm.spawnAndReturn {
-      val stringsMap: RefMap[String] = RefMap(classOf[String], mapKey)
-      stringsMap.get(key)
+      val stringsMap: RefMap[List[String]] = RefMap(classOf[List[String]], mapKey)
+      stringsMap.get(key).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">{x}</div>).toSeq
     }
   }
 
@@ -44,6 +44,7 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
       </head>
       <body>
         <h1>SwarmTwitter</h1>
+        <h2>Sample users:</h2>
         <div>
           <a href="/jmcdoe">jmcdoe</a>
         </div>
@@ -67,17 +68,17 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
         </head>
         <body>
           <h1>SwarmTwitter</h1>
-          <div>Statuses:</div>
+          <h2>Statuses:</h2>
           <div>
             {SwarmBridge.get(userId, "statuses")}
           </div>
             <hr/>
           <form action={"/" + userId} method="get">
             Status:
-              <input type="text" size="5" name="status"/>
-              <input type="submit" value="apply"/>
+              <input type="text" size="15" name="status"/>
+              <input type="submit" value="submit"/>
           </form>
-          <a href="/">home</a>
+          <a href="/">Home</a>
         </body>
       </html>
     }
