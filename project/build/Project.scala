@@ -6,16 +6,20 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
   lazy val swarm_demos = project("swarm-demos", "swarm-demos", new SwarmDemosProject(_), swarm_core)
   lazy val swarm_twitter = project("swarm-twitter", "swarm-twitter", new SwarmTwitterProject(_))
 
-  class SwarmCoreProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
-    lazy val scalaTest = "org.scalatest" % "scalatest_2.9.0" % "1.4.1" % "test"
-    lazy val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.0")
-
+  trait CompilerOptions extends BasicScalaProject with AutoCompilerPlugins {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
   }
 
-  class SwarmDemosProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
-    override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
+  class SwarmDefaultProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions
+
+  class SwarmDefaultWebProject(info: ProjectInfo) extends DefaultWebProject(info) with CompilerOptions with ScalatraProject
+
+  class SwarmCoreProject(info: ProjectInfo) extends SwarmDefaultProject(info) {
+    lazy val scalaTest = "org.scalatest" % "scalatest_2.9.0" % "1.4.1" % "test"
+    lazy val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.0")
   }
+
+  class SwarmDemosProject(info: ProjectInfo) extends SwarmDefaultProject(info)
 
   class SwarmTwitterProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val swarm_twitter_core = project("core", "swarm-twitter-core", new SwarmTwitterCoreProject(_), swarm_core)
@@ -31,18 +35,12 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
   }
 
-  class SwarmTwitterCoreProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins with ScalatraProject {
-    override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
-  }
+  class SwarmTwitterCoreProject(info: ProjectInfo) extends SwarmDefaultProject(info) with ScalatraProject
 
-  class SwarmTwitterNode1Project(info: ProjectInfo) extends DefaultWebProject(info) with AutoCompilerPlugins with ScalatraProject {
-    override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
-  }
+  class SwarmTwitterNode1Project(info: ProjectInfo) extends SwarmDefaultWebProject(info)
 
-  class SwarmTwitterNode2Project(info: ProjectInfo) extends DefaultWebProject(info) with AutoCompilerPlugins with ScalatraProject {
+  class SwarmTwitterNode2Project(info: ProjectInfo) extends SwarmDefaultWebProject(info) {
     override def jettyPort = 8081
-
-    override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
   }
 
 }
