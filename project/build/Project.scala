@@ -23,21 +23,23 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val swarm_twitter_node2 = project("node2", "swarm-twitter-node2", new SwarmTwitterNode2Project(_), swarm_twitter_core)
   }
 
-  class SwarmTwitterCoreProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
+  trait ScalatraProject {
+    lazy val sonatypeNexusSnapshots = "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+    lazy val sonatypeNexusReleases = "Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases"
+    lazy val scalatra = "org.scalatra" %% "scalatra" % "2.0.0-SNAPSHOT"
+    lazy val jetty6 = "org.mortbay.jetty" % "jetty" % "6.1.22" % "test"
+    lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
+  }
+
+  class SwarmTwitterCoreProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins with ScalatraProject {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
   }
 
-  class SwarmTwitterNode1Project(info: ProjectInfo) extends DefaultWebProject(info) with AutoCompilerPlugins {
-    lazy val jetty6 = "org.mortbay.jetty" % "jetty" % "6.1.22" % "test"
-    lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
-
+  class SwarmTwitterNode1Project(info: ProjectInfo) extends DefaultWebProject(info) with AutoCompilerPlugins with ScalatraProject {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
   }
 
-  class SwarmTwitterNode2Project(info: ProjectInfo) extends DefaultWebProject(info) with AutoCompilerPlugins {
-    lazy val jetty6 = "org.mortbay.jetty" % "jetty" % "6.1.22" % "test"
-    lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
-
+  class SwarmTwitterNode2Project(info: ProjectInfo) extends DefaultWebProject(info) with AutoCompilerPlugins with ScalatraProject {
     override def jettyPort = 8081
 
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable")
