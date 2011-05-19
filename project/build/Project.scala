@@ -16,6 +16,7 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
 
   class SwarmCoreProject(info: ProjectInfo) extends SwarmDefaultProject(info) {
     lazy val scalaTest = "org.scalatest" % "scalatest_2.9.0" % "1.4.1" % "test"
+    lazy val log4j = "log4j" % "log4j" % "1.2.16"
     lazy val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.0")
   }
 

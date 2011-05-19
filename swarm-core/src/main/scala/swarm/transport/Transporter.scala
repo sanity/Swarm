@@ -1,6 +1,6 @@
 package swarm.transport
 
-import swarm.Bee
+import swarm.{Logs, Bee}
 
 /**
  * A Transporter moves computation to a remote Swarm node.
@@ -14,7 +14,7 @@ trait Transporter {
 /**
  * A concrete implementation of SwarmTransporter which uses TCP/IP sockets for communication.
  */
-object InetTransporter extends Transporter {
+object InetTransporter extends Transporter with Logs {
 
   import java.net.InetAddress
   import swarm.Swarm
@@ -27,6 +27,7 @@ object InetTransporter extends Transporter {
   override def isLocal(location: Location) = local == location
 
   override def transport(f: (Unit => Bee), destination: Location) {
+    debug("transporting execution to " + destination)
     destination match {
       case InetLocation(address, port) =>
         val skt = new java.net.Socket(address, port);
@@ -47,6 +48,7 @@ object InetTransporter extends Transporter {
           val socket = server.accept()
           val ois = new java.io.ObjectInputStream(socket.getInputStream())
           val bee = ois.readObject().asInstanceOf[(Unit => Bee)]
+          debug("resuming execution from " + local)
           Swarm.continue(bee)
         }
       }

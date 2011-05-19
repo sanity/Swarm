@@ -1,16 +1,16 @@
 package swarm.data
 
 import swarm.Swarm.swarm
-import swarm.Swarm
 import scala.Predef._
 import swarm.transport.Location
+import swarm.{Logs, Swarm}
 
 /**
  * Ref represents a reference to an object which may reside on a remote computer.
  * If apply() is called to retrieve the remote object, it will result in the thread being
  * serialized and moved to the remote computer before returning the object.
  */
-class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) extends Serializable {
+class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) extends Serializable with Logs {
 
   private[this] var _location = initLoc
   private[this] var _uid = initUid
@@ -32,6 +32,7 @@ class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) 
    * Dereference and return the data referenced by this Ref.
    */
   def apply(): A@swarm = {
+    debug("dereferencing Ref " + uid + "@" + location)
     Swarm.dereference(this)
     Store(typeClass, uid).getOrElse(throw new RuntimeException("Unable to find item with uid " + uid + " in local store"))
   }
