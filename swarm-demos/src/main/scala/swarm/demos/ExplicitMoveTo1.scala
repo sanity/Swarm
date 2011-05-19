@@ -11,10 +11,10 @@ object ExplicitMoveTo1 {
 
     InetTransporter.listen(9998)
 
-    Swarm.continueSwarm(emt1Thread)
+    Swarm.spawn(emt1Thread)
   }
 
-  def emt1Thread(u: Unit): Bee@swarm = {
+  def emt1Thread: Bee@swarm = {
     val name = scala.Console.readLine("What is your name? : ");
     Swarm.moveTo(new InetLocation(java.net.InetAddress.getLocalHost, 9997))
     val age = Integer.parseInt(readLine("Hello " + name + ", what age are you? : "))
