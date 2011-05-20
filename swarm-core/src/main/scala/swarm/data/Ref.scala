@@ -51,8 +51,6 @@ class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) 
  */
 object Ref {
 
-  import swarm.Swarm.swarm
-
   /**
    * Store the given value in the local Store, then generate a new Ref instance with the given location and value.
    */
@@ -73,7 +71,7 @@ object Ref {
 class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
 
   // TODO this should really be a map of [String, Ref], however this causes client-side ClassNotFound exceptions when trying to load the Ref class after Swarm.moveTo() in the put method below
-  val map = new collection.mutable.HashMap[String, Tuple3[Class[A], Location, Long]]()
+  private[this] val map = new collection.mutable.HashMap[String, Tuple3[Class[A], Location, Long]]()
 
   /**
    * Dereference and return the value (if any) referenced by the given key.
@@ -104,6 +102,10 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
       RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
     }
   }
+
+  protected def put(key: String, tuple: Tuple3[Class[A], Location, Long]) {
+    map(key) = tuple
+  }
 }
 
 /**
@@ -111,7 +113,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
  */
 object RefMap {
 
-  val map = new collection.mutable.HashMap[String, RefMap[_]]()
+  private[this] val map = new collection.mutable.HashMap[String, RefMap[_]]()
 
   private[this] var _locations: List[Location] = _
 
@@ -135,17 +137,23 @@ object RefMap {
     map(key).asInstanceOf[RefMap[A]]
   }
 
+  /**
+   * For each location, find the RefMap identified by refMapKey and update the value identified by key to a new Ref created from tuple
+   */
   def update[A](refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
-    update(locations, refMapKey, key, tuple)
+    updateForLocations(locations, refMapKey, key, tuple)
   }
 
-  def update[A](locations: List[Location], refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+  /**
+   * A recursive method to iterate over all locations and find and update a Ref.  This is needed because a for comprehension doesn't play well with CPS code.
+   */
+  private def updateForLocations[A](locations: List[Location], refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
     locations match {
       case Nil =>
       case location :: moreLocations =>
         Swarm.moveTo(location)
-        RefMap(tuple._1, refMapKey).map(key) = tuple
-        update(moreLocations, refMapKey, key, tuple)
+        RefMap(tuple._1, refMapKey).put(key, tuple)
+        updateForLocations(moreLocations, refMapKey, key, tuple)
     }
   }
 }
