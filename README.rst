@@ -7,7 +7,7 @@ Swarm is a framework allowing the creation of web applications which can scale t
 
 In effect, Swarm will be the ultimate "Platform as a Service", going much further than systems like Google App Engine in relieving the programmer from the difficulties of cloud computing.
 
-You may find the Swarm source code here, however for the project's homepage and lots more information, including an explanation of **what Swarm is**, please visit GoogleCode_.
+You may find the Swarm source code here, however for the project's homepage and lots more information, please visit GoogleCode_.
 
 .. _GoogleCode: http://code.google.com/p/swarm-dpl
 
