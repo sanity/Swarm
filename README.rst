@@ -51,10 +51,10 @@ Run the Twitter simulator
 
 From the Swarm directory, in one console window:
 
-``> sbt "project swarm-twitter-node1" jetty-run``
+``> sbt "project swarm-twitter-node1" ~jetty-run``
 
 Then, in another console window:
 
-``> sbt "project swarm-twitter-node2" jetty-run``
+``> sbt "project swarm-twitter-node2" ~jetty-run``
 
 In a Web browser, navigate to http://localhost:8080/ and http://localhost:8081/ to interact with each node.
