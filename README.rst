@@ -1,13 +1,14 @@
 Swarm
 =====
 
-You may find the Swarm source code here, however for the project's homepage
-please visit GoogleCode_.
+You may find the Swarm source code here, however for the project's homepage and lots more information, please visit GoogleCode_.
 
 .. _GoogleCode: http://code.google.com/p/swarm-dpl
 
-Notes
------
+Quick Start Guide
+-----------------
+
+*Note:* Swarm is still very-much a work in progress.  These instructions will let you play with some proof-of-concept demos, but Swarm remains a long way from being of practical use.
 
 These instructions assume you are using a Linux or Mac-like system. If you are using Windows, we recommending using Cygwin which should allow you to follow these instructions more-or-less verbatim.
 
