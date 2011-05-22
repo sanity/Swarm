@@ -6,7 +6,7 @@ You may find the Swarm source code here, however for the project's homepage and 
 .. _GoogleCode: http://code.google.com/p/swarm-dpl
 
 Quick Start Guide
------------------
+=================
 
 *Note:* Swarm is still very-much a work in progress.  These instructions will let you play with some proof-of-concept demos, but Swarm remains a long way from being of practical use.
 
