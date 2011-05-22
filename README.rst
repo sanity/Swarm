@@ -46,6 +46,8 @@ Then, in another console window:
 
 When prompted, select the class ``swarm.demos.ExplicitMoveTo1``
 
+In this demo keep an eye on both consoles, you will be asked for input in one console, then the other.
+
 Run the Twitter simulator
 -------------------------
 
