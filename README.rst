@@ -61,6 +61,7 @@ Run the Twitter simulator
 From the sbt console, run the ``twitter-demo`` task:
 
 ``$ sbt``
+
 ``> twitter-demo``
 
 In a Web browser, navigate to http://localhost:8080/ and http://localhost:8081/ to interact with each node.
