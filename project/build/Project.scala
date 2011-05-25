@@ -6,7 +6,11 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
   lazy val swarm_demos = project("swarm-demos", "swarm-demos", new SwarmDemosProject(_), swarm_core)
   lazy val swarm_twitter = project("swarm-twitter", "swarm-twitter", new SwarmTwitterProject(_))
 
-  lazy val twitterDemo = swarm_twitter.swarm_twitter_node1.jettyRun; swarm_twitter.swarm_twitter_node2.jettyRun
+  lazy val twitterDemo = task {
+    swarm_twitter.swarm_twitter_node1.jettyRun.run
+    swarm_twitter.swarm_twitter_node2.jettyRun.run
+    None
+  }
 
   trait CompilerOptions extends BasicScalaProject with AutoCompilerPlugins {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
