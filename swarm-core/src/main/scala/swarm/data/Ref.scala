@@ -2,8 +2,8 @@ package swarm.data
 
 import swarm.Swarm.swarm
 import scala.Predef._
-import swarm.transport.Location
 import swarm.{Logs, Swarm}
+import swarm.transport.{Transporter, Location}
 
 /**
  * Ref represents a reference to an object which may reside on a remote computer.
@@ -90,7 +90,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
    * Add the given data to the local map.
    * Create a new Ref instance in each node within the Swarm cluster to reference the single instance of the stored data.
    */
-  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A], tx: Transporter, local: Location): Unit = Swarm.spawn {
     if (map.contains(key)) {
       // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
       val tuple = map(key)

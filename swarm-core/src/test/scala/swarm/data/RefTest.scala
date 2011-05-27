@@ -3,7 +3,7 @@ package swarm.data
 import org.scalatest.FunSuite
 import swarm.Swarm.swarm
 import util.continuations._
-import swarm.InMemLocation._
+import swarm.transport.{Location, Transporter}
 import swarm._
 
 class RefTest extends FunSuite {
@@ -16,6 +16,9 @@ class RefTest extends FunSuite {
     execute {
       Unit =>
 
+        implicit val tx: Transporter = InMemTest.tx1
+        implicit val local: Location = InMemLocation(1)
+
         RefMap.locations = List(InMemLocation(1), InMemLocation(2))
 
         val stringsMap: RefMap[String] = RefMap(classOf[String], "strings")
@@ -23,6 +26,8 @@ class RefTest extends FunSuite {
         stringsMap.put(InMemLocation(1), "one", "1")
 
         stringsMap.put(InMemLocation(2), "two", "2")
+
+        Thread.sleep(100)
 
         Swarm.moveTo(InMemLocation(1))
         assert(Some("1") === stringsMap.get("one"))

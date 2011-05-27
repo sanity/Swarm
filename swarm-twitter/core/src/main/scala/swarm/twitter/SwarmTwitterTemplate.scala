@@ -17,11 +17,11 @@ object SwarmBridge {
   }
 
   def update(mapKey: String, key: String, value: String)(implicit tx: Transporter, local: Location) {
-    Swarm.spawn {
-      val stringsMap = RefMap(classOf[List[String]], mapKey)
-      val statuses: List[String] = stringsMap.get(key).getOrElse(Nil)
+    //Swarm.spawn {
+      val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], mapKey))
+      val statuses: List[String] = Swarm.spawnAndReturn(stringsMap.get(key).getOrElse(Nil))
       stringsMap.put(local, key, value :: statuses)
-    }
+    //}
   }
 }
 

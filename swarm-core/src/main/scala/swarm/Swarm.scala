@@ -34,7 +34,7 @@ object Swarm {
     thread.start()
   }
 
-  def spawnAndReturn(f: => Any@swarm)(implicit tx: Transporter, local: Location) = {
+  def spawnAndReturn[A](f: => A@swarm)(implicit tx: Transporter, local: Location) = {
     val uuid = java.util.UUID.randomUUID.toString
     val future: Future = new Future
     futures(uuid) = future
@@ -47,7 +47,7 @@ object Swarm {
       NoBee()
     }(tx)
     // TODO join the future thread here
-    future.get
+    future.get.asInstanceOf[A]
   }
 
 
