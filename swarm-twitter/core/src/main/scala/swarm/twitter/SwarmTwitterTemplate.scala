@@ -5,26 +5,6 @@ import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
 import swarm.Swarm
 
-object SwarmBridge {
-
-  def get(mapKey: String, key: String)(implicit tx: Transporter, local: Location) = {
-    //Swarm.spawnAndReturn {
-    val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], mapKey))
-    stringsMap.get(key).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
-      {x}
-    </div>).toSeq
-    //}
-  }
-
-  def update(mapKey: String, key: String, value: String)(implicit tx: Transporter, local: Location) {
-    //Swarm.spawn {
-      val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], mapKey))
-      val statuses: List[String] = Swarm.spawnAndReturn(stringsMap.get(key).getOrElse(Nil))
-      stringsMap.put(local, key, value :: statuses)
-    //}
-  }
-}
-
 class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
   implicit val local: Location = new InetLocation(java.net.InetAddress.getLocalHost, localPort)
@@ -65,7 +45,11 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
     val userId: String = params("userId")
     if (params.contains("status")) {
       val status = params("status")
-      SwarmBridge.update(userId, "statuses", status)
+
+      val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], "statuses"))
+      val statuses: List[String] = Swarm.spawnAndReturn(stringsMap.get(userId).getOrElse(Nil))
+      stringsMap.put(local, userId, status :: statuses)
+
       redirect("/" + userId)
     } else {
       <html>
@@ -80,7 +64,12 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
             </h2>
             <h3>Statuses</h3>
             <div style="margin-bottom: 50px;">
-              {SwarmBridge.get(userId, "statuses")}
+              {
+              val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], "statuses"))
+              stringsMap.get(userId).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
+                {x}
+              </div>).toSeq
+              }
             </div>
               <hr/>
             <form action={"/" + userId} method="get">
