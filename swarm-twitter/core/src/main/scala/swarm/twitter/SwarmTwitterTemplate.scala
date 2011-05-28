@@ -43,13 +43,11 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
 
   get("/:userId") {
     val userId: String = params("userId")
+    val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], "statuses"))
     if (params.contains("status")) {
       val status = params("status")
-
-      val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], "statuses"))
-      val statuses: List[String] = Swarm.spawnAndReturn(stringsMap.get(userId).getOrElse(Nil))
+      val statuses: List[String] = stringsMap.get(userId).getOrElse(Nil)
       stringsMap.put(local, userId, status :: statuses)
-
       redirect("/" + userId)
     } else {
       <html>
@@ -65,7 +63,6 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
             <h3>Statuses</h3>
             <div style="margin-bottom: 50px;">
               {
-              val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], "statuses"))
               stringsMap.get(userId).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
                 {x}
               </div>).toSeq
