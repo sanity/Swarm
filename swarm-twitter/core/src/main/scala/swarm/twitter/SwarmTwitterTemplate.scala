@@ -4,16 +4,14 @@ import swarm.data.RefMap
 import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
 import swarm.Swarm
+import java.util.Date
 
 class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
   implicit val local: Location = new InetLocation(java.net.InetAddress.getLocalHost, localPort)
   val remote: InetLocation = new InetLocation(java.net.InetAddress.getLocalHost, remotePort)
-
   implicit val tx: Transporter = InetTransporter
 
-  println("local: " + localPort)
-  println("remote: " + remotePort)
   RefMap.locations = List(local, remote)
   InetTransporter.listen(localPort)
 
@@ -42,12 +40,13 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
   }
 
   get("/:userId") {
+    type Status = Tuple2[String, Date]
     val userId: String = params("userId")
-    val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], "statuses"))
+    val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[Status]], "statuses"))
     if (params.contains("status")) {
       val status = params("status")
-      val statuses: List[String] = stringsMap.get(userId).getOrElse(Nil)
-      stringsMap.put(local, userId, status :: statuses)
+      val statuses: List[Status] = stringsMap.get(userId).getOrElse(Nil)
+      stringsMap.put(local, userId, new Status(status, new Date) :: statuses)
       redirect("/" + userId)
     } else {
       <html>
@@ -63,16 +62,18 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
             <h3>Statuses</h3>
             <div style="margin-bottom: 50px;">
               {
-              stringsMap.get(userId).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
-                {x}
-              </div>).toSeq
+                stringsMap.get(userId).getOrElse(Nil).map(status =>
+                  <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
+                    <span style="color: #9999ff">{userId}&gt;</span> {status._1} <span style="float: right; color: #999999; font-size: 75%">{status._2}</span>
+                  </div>
+                ).toSeq
               }
             </div>
               <hr/>
             <form action={"/" + userId} method="get">
               Post a new status:
-                <input type="text" size="15" name="status"/>
-                <input type="submit" value="submit"/>
+              <input type="text" size="15" name="status"/>
+              <input type="submit" value="submit"/>
             </form>
             <div><a href={"http://localhost:8080/" + userId}>view node 1</a></div>
             <div><a href={"http://localhost:8081/" + userId}>view node 2</a></div>
