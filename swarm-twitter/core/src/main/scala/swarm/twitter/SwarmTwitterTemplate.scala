@@ -8,12 +8,12 @@ import swarm.Swarm
 object SwarmBridge {
 
   def get(mapKey: String, key: String)(implicit tx: Transporter, local: Location) = {
-    Swarm.spawnAndReturn {
-      val stringsMap: RefMap[List[String]] = RefMap(classOf[List[String]], mapKey)
-      stringsMap.get(key).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
-        {x}
-      </div>).toSeq
-    }
+    //Swarm.spawnAndReturn {
+    val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[String]], mapKey))
+    stringsMap.get(key).getOrElse(Nil).map(x => <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
+      {x}
+    </div>).toSeq
+    //}
   }
 
   def update(mapKey: String, key: String, value: String)(implicit tx: Transporter, local: Location) {

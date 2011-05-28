@@ -76,7 +76,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
   /**
    * Dereference and return the value (if any) referenced by the given key.
    */
-  def get(key: String): Option[A]@swarm = {
+  def get(key: String)(implicit tx: Transporter, local: Location): Option[A] = Swarm.spawnAndReturn {
     if (map.contains(key)) {
       val tuple = map(key)
       val ref = new Ref(tuple._1, tuple._2, tuple._3)
