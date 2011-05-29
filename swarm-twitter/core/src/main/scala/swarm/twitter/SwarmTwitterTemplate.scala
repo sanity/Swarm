@@ -6,7 +6,7 @@ import org.scalatra._
 import swarm.Swarm
 import java.util.Date
 
-class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
+class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
   implicit val local: Location = new InetLocation(java.net.InetAddress.getLocalHost, localPort)
   val remote: InetLocation = new InetLocation(java.net.InetAddress.getLocalHost, remotePort)
@@ -15,16 +15,17 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
   RefMap.locations = List(local, remote)
   InetTransporter.listen(localPort)
 
-  protected def contextPath = request.getContextPath
+  type Status = Tuple2[String, Date]
+  val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[Status]], "statuses"))
 
   get("/") {
     <html>
       <head>
-        <title>SwarmTwitter</title>
+        <title>SwarmTwitter :: {nodeName}</title>
       </head>
       <body>
         <div style="width: 800px; margin-left: auto; margin-right: auto;">
-          <h1>SwarmTwitter</h1>
+          <h1>SwarmTwitter :: {nodeName}</h1>
           <p>Welcome to SwarmTwitter, a Twitter simulator built using <a href="https://github.com/sanity/Swarm">Swarm</a>, a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
           <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to <span style="font-face: monospace;">/&lt;username&gt;</span>.</p>
           <h2>Sample users</h2>
@@ -40,9 +41,7 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
   }
 
   get("/:userId") {
-    type Status = Tuple2[String, Date]
     val userId: String = params("userId")
-    val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[Status]], "statuses"))
     if (params.contains("status")) {
       val status = params("status")
       val statuses: List[Status] = stringsMap.get(userId).getOrElse(Nil)
@@ -51,11 +50,11 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
     } else {
       <html>
         <head>
-          <title>SwarmTwitter</title>
+          <title>SwarmTwitter :: {nodeName}</title>
         </head>
         <body>
           <div style="width: 800px; margin-left: auto; margin-right: auto;">
-            <h1>SwarmTwitter</h1>
+            <h1>SwarmTwitter :: {nodeName}</h1>
             <h2>
               {userId}
             </h2>
@@ -83,4 +82,6 @@ class SwarmTwitterTemplate(localPort: Short, remotePort: Short) extends Scalatra
       </html>
     }
   }
+
+  protected def contextPath = request.getContextPath
 }
