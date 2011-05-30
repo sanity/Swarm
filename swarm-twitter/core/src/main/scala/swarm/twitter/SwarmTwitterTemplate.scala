@@ -3,7 +3,6 @@ package swarm.twitter
 import swarm.data.RefMap
 import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
-import swarm.Swarm
 import java.util.Date
 
 class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
@@ -16,7 +15,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   InetTransporter.listen(localPort)
 
   type Status = Tuple3[String, String, Date]
-  val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[Status]], "statuses"))
+  val stringsMap = RefMap.get(classOf[List[Status]], "statuses")
 
   get("/") {
     <html>

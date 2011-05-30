@@ -126,6 +126,8 @@ object RefMap {
 
   def locations = _locations
 
+  def get[A](typeClass: Class[A], key: String)(implicit tx: Transporter, local: Location): RefMap[A] = Swarm.spawnAndReturn(RefMap(typeClass, key))
+
   /**
    * Generate a RefMap instance of the given type and key.
    */
