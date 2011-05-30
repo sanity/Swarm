@@ -28,6 +28,8 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
           <h1>SwarmTwitter :: {nodeName}</h1>
           <p>Welcome to SwarmTwitter, a Twitter simulator built using <a href="https://github.com/sanity/Swarm">Swarm</a>, a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
           <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to <span style="font-face: monospace;">/&lt;username&gt;</span>.</p>
+          <div><a href={"http://localhost:8080/"}>view node 1</a></div>
+          <div><a href={"http://localhost:8081/"}>view node 2</a></div>
           <h2>Sample users</h2>
           <div>
             <a href="/jmcdoe">jmcdoe</a>
