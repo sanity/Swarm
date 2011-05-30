@@ -15,7 +15,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   RefMap.locations = List(local, remote)
   InetTransporter.listen(localPort)
 
-  type Status = Tuple2[String, Date]
+  type Status = Tuple3[String, String, Date]
   val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[List[Status]], "statuses"))
 
   get("/") {
@@ -35,6 +35,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
           <div>
             <a href="/maxpower">maxpower</a>
           </div>
+          {statuses(List("jmcdoe", "maxpower"))}
         </div>
       </body>
     </html>
@@ -45,7 +46,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
     if (params.contains("status")) {
       val status = params("status")
       val statuses: List[Status] = stringsMap.get(userId).getOrElse(Nil)
-      stringsMap.put(local, userId, new Status(status, new Date) :: statuses)
+      stringsMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
       redirect("/" + userId)
     } else {
       <html>
@@ -58,17 +59,8 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
             <h2>
               {userId}
             </h2>
-            <h3>Statuses</h3>
-            <div style="margin-bottom: 50px;">
-              {
-                stringsMap.get(userId).getOrElse(Nil).map(status =>
-                  <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
-                    <span style="color: #9999ff">{userId}&gt;</span> {status._1} <span style="float: right; color: #999999; font-size: 75%">{status._2}</span>
-                  </div>
-                ).toSeq
-              }
-            </div>
-              <hr/>
+            {statuses(List(userId))}
+            <hr/>
             <form action={"/" + userId} method="get">
               Post a new status:
               <input type="text" size="15" name="status"/>
@@ -81,6 +73,20 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
         </body>
       </html>
     }
+  }
+
+  def statuses(userIds: List[String]): xml.NodeSeq = {
+    val statuses: List[Status] = userIds.flatMap(userId => stringsMap.get(userId).getOrElse(Nil)).sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
+    <h3>Statuses</h3>
+    <div style="margin-bottom: 50px;">
+      {
+        statuses.map(status =>
+          <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
+            <span style="color: #9999ff">{status._1}&gt;</span> {status._2} <span style="float: right; color: #999999; font-size: 75%">{status._3}</span>
+          </div>
+        ).toSeq
+      }
+    </div>
   }
 
   protected def contextPath = request.getContextPath
