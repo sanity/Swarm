@@ -16,17 +16,13 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
   }
 
-  class SwarmDefaultProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions
-
-  class SwarmDefaultWebProject(info: ProjectInfo) extends DefaultWebProject(info) with CompilerOptions with ScalatraProject
-
-  class SwarmCoreProject(info: ProjectInfo) extends SwarmDefaultProject(info) {
+  class SwarmCoreProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions {
     lazy val scalaTest = "org.scalatest" % "scalatest_2.9.0" % "1.4.1" % "test"
     lazy val log4j = "log4j" % "log4j" % "1.2.16"
     lazy val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.0")
   }
 
-  class SwarmDemosProject(info: ProjectInfo) extends SwarmDefaultProject(info)
+  class SwarmDemosProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions
 
   class SwarmTwitterProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val swarm_twitter_core = project("core", "swarm-twitter-core", new SwarmTwitterCoreProject(_), swarm_core)
@@ -42,11 +38,11 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
   }
 
-  class SwarmTwitterCoreProject(info: ProjectInfo) extends SwarmDefaultProject(info) with ScalatraProject
+  class SwarmTwitterCoreProject(info: ProjectInfo) extends DefaultProject(info) with ScalatraProject
 
-  class SwarmTwitterNode1Project(info: ProjectInfo) extends SwarmDefaultWebProject(info)
+  class SwarmTwitterNode1Project(info: ProjectInfo) extends DefaultWebProject(info) with ScalatraProject
 
-  class SwarmTwitterNode2Project(info: ProjectInfo) extends SwarmDefaultWebProject(info) {
+  class SwarmTwitterNode2Project(info: ProjectInfo) extends DefaultWebProject(info) with ScalatraProject {
     override def jettyPort = 8081
   }
 
