@@ -10,7 +10,7 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     swarm_twitter.swarm_twitter_node1.jettyRun.run
     swarm_twitter.swarm_twitter_node2.jettyRun.run
     None
-  }
+  } dependsOn(swarm_twitter.swarm_twitter_node1.`compile`, swarm_twitter.swarm_twitter_node2.`compile`)
 
   trait CompilerOptions extends BasicScalaProject with AutoCompilerPlugins {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
