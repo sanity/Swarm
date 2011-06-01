@@ -35,4 +35,15 @@ class RefTest extends FunSuite {
 
     List("hello", "world").foreach(string => stringsMap.put(InMemLocation(1), "string", string))
   }
+
+  test("continuations should accomodate map") {
+    implicit val tx: Transporter = InMemTest.tx1
+    implicit val local: Location = InMemLocation(1)
+
+    RefMap.locations = List(InMemLocation(1), InMemLocation(2))
+
+    val stringsMap = RefMap.get(classOf[String], "strings")
+
+    List("hello", "world").map(string => stringsMap.put(InMemLocation(1), "string", string))
+  }
 }
