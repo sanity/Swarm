@@ -24,6 +24,6 @@ class RefTest extends FunSuite {
 
         assert(Some("1") === stringsMap.get("one"))
         assert(Some("2") === stringsMap.get("two"))
-        assert(Some("1") === Swarm.spawnAndReturn(RefMap(classOf[String], "strings")).get("one"))
+        assert(Some("1") === RefMap.get(classOf[String], "strings").get("one"))
   }
 }
