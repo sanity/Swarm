@@ -14,7 +14,7 @@ class RefTest extends FunSuite {
 
         RefMap.locations = List(InMemLocation(1), InMemLocation(2))
 
-        val stringsMap = Swarm.spawnAndReturn(RefMap(classOf[String], "strings"))
+        val stringsMap = RefMap.get(classOf[String], "strings")
 
         stringsMap.put(InMemLocation(1), "one", "1")
         Thread.sleep(100)
