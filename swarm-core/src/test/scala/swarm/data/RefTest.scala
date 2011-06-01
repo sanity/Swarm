@@ -24,4 +24,15 @@ class RefTest extends FunSuite {
     assert(Some("2") === stringsMap.get("two"))
     assert(Some("1") === RefMap.get(classOf[String], "strings").get("one"))
   }
+
+  test("continuations should accomodate foreach") {
+    implicit val tx: Transporter = InMemTest.tx1
+    implicit val local: Location = InMemLocation(1)
+
+    RefMap.locations = List(InMemLocation(1), InMemLocation(2))
+
+    val stringsMap = RefMap.get(classOf[String], "strings")
+
+    List("hello", "world").foreach(string => stringsMap.put(InMemLocation(1), "string", string))
+  }
 }
