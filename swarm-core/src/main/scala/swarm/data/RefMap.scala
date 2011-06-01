@@ -22,19 +22,12 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
    * Add the given data to the local map.
    * Create a new Ref instance in each node within the Swarm cluster to reference the single instance of the stored data.
    */
-  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A], tx: Transporter, local: Location): Unit = Swarm.spawn {
-    if (map.contains(key)) {
-      // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
-      val tuple = map(key)
-      val ref = new Ref(tuple._1, tuple._2, tuple._3)
-      ref.update(value)
-    } else {
-      // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
-      val ref = Ref(location, value)
-      RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
-    }
+  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A], tx: Transporter, local: Location): Unit = {
+    val tuple = map.getOrElse(key, Swarm.spawnAndReturn{ val ref = Ref(location, value); (ref.typeClass, ref.location, ref.uid) })
+    val ref = new Ref(tuple._1, tuple._2, tuple._3)
+    Swarm.spawn{ ref.update(value); RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid)) }
   }
-
+  
   protected def put(key: String, tuple: Tuple3[Class[A], Location, Long]) {
     map(key) = tuple
   }
