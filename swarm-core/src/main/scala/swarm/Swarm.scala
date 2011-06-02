@@ -3,6 +3,7 @@ package swarm
 import data.{Store, Ref}
 import transport._
 import util.continuations._
+import java.util.concurrent.Executors
 
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
@@ -12,6 +13,8 @@ import util.continuations._
 object Swarm {
 
   type swarm = cpsParam[Bee, Bee]
+
+  private val executor = Executors.newFixedThreadPool(10)
 
   /**
    * Called from concrete implementations to run the continuation
@@ -25,13 +28,13 @@ object Swarm {
    * new thread)
    */
   def spawn(f: => Any@swarm)(implicit tx: Transporter) {
-    val thread = new Thread() {
+    val runnable = new Runnable() {
       override def run() = execute(reset {
         f
         NoBee()
       })
     }
-    thread.start()
+    executor.execute(runnable)
   }
 
   def spawnAndReturn[A](f: => A@swarm)(implicit tx: Transporter, local: Location) = {
