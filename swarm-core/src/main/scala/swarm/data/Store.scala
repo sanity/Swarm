@@ -12,7 +12,7 @@ object Store {
 
   private[this] var repository = SimpleRepository
 
-  case class Relocated(val uid: Long, val location: Location)
+  case class Relocated(uid: Long, location: Location)
 
   val relocated = new collection.mutable.HashMap[Long, Ref[_]]()
 

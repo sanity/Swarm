@@ -15,9 +15,9 @@ class Ref[A](val typeClass: Class[A], initLoc: Location, initUid: Long) extends 
   private[this] var _location = initLoc
   private[this] var _uid = initUid
 
-  def location: Location = _location
+  def location = _location
 
-  def uid: Long = _uid
+  def uid = _uid
 
   /**
    * Called when the data referenced by this Ref has been moved.

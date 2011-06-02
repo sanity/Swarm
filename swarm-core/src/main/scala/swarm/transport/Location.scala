@@ -9,7 +9,7 @@ trait Location extends Serializable
 /**
  * A simple Location implementation which uses TCP/IP.
  */
-case class InetLocation(val address: java.net.InetAddress, val port: Short) extends Location {
+case class InetLocation(address: java.net.InetAddress, port: Short) extends Location {
 
   override def equals(other: Any) = {
     if (!other.isInstanceOf[Any]) false
