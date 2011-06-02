@@ -42,7 +42,7 @@ object InetTransporter extends Transporter with Logs {
 
     val server = new java.net.ServerSocket(port);
 
-    var listenThread = new Thread() {
+    var runnable = new Runnable() {
       override def run() = {
         while (true) {
           val socket = server.accept()
@@ -53,7 +53,6 @@ object InetTransporter extends Transporter with Logs {
         }
       }
     }
-    listenThread.start();
-    Thread.sleep(500);
+    Swarm.executor.execute(runnable)
   }
 }

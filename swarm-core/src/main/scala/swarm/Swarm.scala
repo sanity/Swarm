@@ -14,7 +14,7 @@ object Swarm {
 
   type swarm = cpsParam[Bee, Bee]
 
-  private val executor = Executors.newFixedThreadPool(10)
+  val executor = Executors.newFixedThreadPool(10)
 
   /**
    * Called from concrete implementations to run the continuation
