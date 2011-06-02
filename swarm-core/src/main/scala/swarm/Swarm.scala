@@ -39,14 +39,12 @@ object Swarm {
     val future: Future = new Future
     futures(uuid) = future
 
-    // TODO start the future here as a thread
     Swarm.spawn {
       val x = f
       Swarm.moveTo(local)
       Swarm.futureResult(uuid, x)
       NoBee()
     }(tx)
-    // TODO join the future thread here
     future.get.asInstanceOf[A]
   }
 
@@ -72,23 +70,9 @@ object Swarm {
     newRef
   }
 
-  case class Swapped[A, B](ref1: Ref[A], ref2: Ref[B])
-
-  def swap[A, B](ref1: Ref[A], ref2: Ref[B]): Swapped[A, B]@swarm = {
-    val location1: Location = ref1.location
-    val location2: Location = ref2.location
-    Swapped(relocate(ref1, location2), relocate(ref2, location1))
-  }
-
   def dereference(ref: Ref[_]) = shift {
     c: (Unit => Bee) =>
       RefBee(c, ref)
-  }
-
-  private[this] val demand = collection.mutable.HashMap[Long, Int]()
-
-  def getDemand(ref: Ref[_]): Int = {
-    demand.getOrElse(ref.uid, 0)
   }
 
   /**
@@ -105,9 +89,7 @@ object Swarm {
         } else {
           Swarm.continue(f)
         }
-      case RefBee(f, ref) =>
-        demand(ref.uid) = getDemand(ref) + 1
-        tx.transport(f, ref.location)
+      case RefBee(f, ref) => tx.transport(f, ref.location)
       case IsBee(f, destination) if (tx.isLocal(destination)) => Swarm.continue(f)
       case IsBee(f, destination) => tx.transport(f, destination)
       case NoBee() =>

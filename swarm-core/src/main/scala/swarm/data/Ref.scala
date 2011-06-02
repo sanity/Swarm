@@ -10,7 +10,7 @@ import swarm.transport.Location
  * If apply() is called to retrieve the remote object, it will result in the thread being
  * serialized and moved to the remote computer before returning the object.
  */
-class Ref[A](val typeClass: Class[A], val initLoc: Location, val initUid: Long) extends Serializable with Logs {
+class Ref[A](val typeClass: Class[A], initLoc: Location, initUid: Long) extends Serializable with Logs {
 
   private[this] var _location = initLoc
   private[this] var _uid = initUid
