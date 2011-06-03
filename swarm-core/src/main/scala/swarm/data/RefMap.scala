@@ -15,6 +15,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
   /**
    * Dereference and return the value (if any) referenced by the given key.
    */
+  // TODO remove spawnAndReturn call since it forces blocking and potentially unnecessary relocation as well as a narrow continuation delimitation
   def get(key: String)(implicit tx: Transporter, local: Location): Option[A] =
     map.get(key).map(tuple => Swarm.spawnAndReturn((new Ref(tuple._1, tuple._2, tuple._3))()))
 
@@ -22,6 +23,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
    * Add the given data to the local map.
    * Create a new Ref instance in each node within the Swarm cluster to reference the single instance of the stored data.
    */
+  // TODO should spawn be removed here since it foces a narrow continuation delimitation?
   def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A], tx: Transporter, local: Location): Unit = {
     val tuple = map.getOrElse(key, Swarm.spawnAndReturn{ val ref = Ref(location, value); (ref.typeClass, ref.location, ref.uid) })
     val ref = new Ref(tuple._1, tuple._2, tuple._3)
