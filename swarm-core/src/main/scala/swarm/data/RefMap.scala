@@ -1,6 +1,6 @@
 package swarm.data
 
-import swarm.Swarm.swarm
+import swarm.Swarm._
 import swarm.Swarm
 import swarm.transport.{Transporter, Location}
 import java.util.UUID
@@ -81,19 +81,10 @@ object RefMap {
    * For each location, find the RefMap identified by refMapKey and update the value identified by key to a new Ref created from tuple
    */
   def update[A](refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
-    updateForLocations(locations, refMapKey, key, tuple)
-  }
-
-  /**
-   * A recursive method to iterate over all locations and find and update a Ref.  This is needed because a for comprehension doesn't play well with CPS code.
-   */
-  private def updateForLocations[A](locations: List[Location], refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
-    locations match {
-      case Nil =>
-      case location :: moreLocations =>
+    Swarm.foreach(locations, {
+      location: Location =>
         Swarm.moveTo(location)
         RefMap(tuple._1, refMapKey).put(key, tuple)
-        updateForLocations(moreLocations, refMapKey, key, tuple)
-    }
+    })
   }
 }

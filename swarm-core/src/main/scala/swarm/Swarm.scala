@@ -4,6 +4,8 @@ import data.{Store, Ref}
 import transport._
 import util.continuations._
 import java.util.concurrent.Executors
+import collection.IterableLike
+import collection.generic.CanBuildFrom
 
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
@@ -122,5 +124,14 @@ object Swarm {
       futures(uuid) = new Future(uuid)
     }
     futures(uuid)
+  }
+
+  def foreach[A](xs: List[A], f: A => Unit@swarm): Unit@swarm = {
+    xs match {
+      case Nil =>
+      case x :: moreXs =>
+        f(x)
+        foreach(moreXs, f)
+    }
   }
 }
