@@ -37,18 +37,11 @@ object Swarm {
     executor.execute(runnable)
   }
 
-  def spawnAndReturn[A](f: => A@swarm)(implicit tx: Transporter, local: Location) = {
-    val uuid = java.util.UUID.randomUUID.toString
-    val future: Future = new Future
-    futures(uuid) = future
-
-    Swarm.spawn {
-      val x = f
-      Swarm.moveTo(local)
-      Swarm.futureResult(uuid, x)
-      NoBee()
-    }(tx)
-    future.get.asInstanceOf[A]
+  def promise[A](uuid: String, f: => A@swarm)(implicit local: Location) = {
+    futures(uuid) = new Future
+    val x = f
+    Swarm.moveTo(local)
+    Swarm.saveFutureResult(uuid, x)
   }
 
 
@@ -120,10 +113,14 @@ object Swarm {
 
   private[this] val futures = new collection.mutable.HashMap[String, Future]()
 
-  def futureResult(uuid: String, value: Any) {
-    futures.get(uuid).map {
-      futureValue =>
-        futureValue.value = value
+  def saveFutureResult(uuid: String, value: Any) = getFuture(uuid).value = value
+
+  def getFutureResult(uuid: String) = getFuture(uuid).get
+
+  private def getFuture(uuid: String) = {
+    if (!futures.contains(uuid)) {
+      futures(uuid) = new Future(uuid)
     }
+    futures(uuid)
   }
 }

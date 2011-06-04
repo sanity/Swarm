@@ -38,11 +38,11 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
   }
 
-  class SwarmTwitterCoreProject(info: ProjectInfo) extends DefaultProject(info) with ScalatraProject
+  class SwarmTwitterCoreProject(info: ProjectInfo) extends DefaultProject(info) with ScalatraProject with CompilerOptions
 
-  class SwarmTwitterNode1Project(info: ProjectInfo) extends DefaultWebProject(info) with ScalatraProject
+  class SwarmTwitterNode1Project(info: ProjectInfo) extends DefaultWebProject(info) with ScalatraProject with CompilerOptions
 
-  class SwarmTwitterNode2Project(info: ProjectInfo) extends DefaultWebProject(info) with ScalatraProject {
+  class SwarmTwitterNode2Project(info: ProjectInfo) extends DefaultWebProject(info) with ScalatraProject with CompilerOptions {
     override def jettyPort = 8081
   }
 

@@ -13,6 +13,8 @@ class InMemTest extends FunSuite {
   }
 
   test("explicit relocate() transports data") {
+    implicit val local: Location = InMemLocation(1)
+
     InMemTest.currentLocation = Some(InMemLocation(1))
 
     execute {

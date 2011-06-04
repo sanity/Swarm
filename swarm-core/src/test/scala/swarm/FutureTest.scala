@@ -2,21 +2,18 @@ package swarm
 
 import data.Ref
 import org.scalatest.FunSuite
+import java.util.UUID
 
 class FutureTest extends FunSuite {
 
   test("Future") {
-
-    val result = Swarm.spawnAndReturn {
+    val uuid = UUID.randomUUID.toString
+    Swarm.spawn {
       Swarm.moveTo(InMemLocation(1))
-
-      // create a Ref
       val ref2 = Ref(InMemLocation(2), "test string two")
-      assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+      Swarm.saveFutureResult(uuid, ref2())
+    }(InMemTest.getTransporter)
 
-      ref2()
-    }(InMemTest.getTransporter, InMemLocation(1))
-
-    assert("test string two" === result)
+    assert("test string two" === Swarm.getFutureResult(uuid))
   }
 }

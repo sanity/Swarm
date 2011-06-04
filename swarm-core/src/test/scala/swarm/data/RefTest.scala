@@ -10,53 +10,20 @@ class RefTest extends FunSuite {
     implicit val tx: Transporter = InMemTest.tx1
     implicit val local: Location = InMemLocation(1)
 
-    RefMap.locations = List(InMemLocation(1), InMemLocation(2))
+    Swarm.spawn {
+      RefMap.locations = List(InMemLocation(1), InMemLocation(2))
 
-    val stringsMap = RefMap.get(classOf[String], "strings")
+      val stringsMap = RefMap(classOf[String], "strings")
 
-    stringsMap.put(InMemLocation(1), "one", "1")
-    Thread.sleep(100)
+      stringsMap.put(InMemLocation(1), "one", "1")
+      Thread.sleep(100)
 
-    stringsMap.put(InMemLocation(2), "two", "2")
-    Thread.sleep(100)
+      stringsMap.put(InMemLocation(2), "two", "2")
+      Thread.sleep(100)
 
-    assert(Some("1") === stringsMap.get("one"))
-    assert(Some("2") === stringsMap.get("two"))
-    assert(Some("1") === RefMap.get(classOf[String], "strings").get("one"))
-  }
-
-  test("continuations should accomodate foreach") {
-    implicit val tx: Transporter = InMemTest.tx1
-    implicit val local: Location = InMemLocation(1)
-
-    RefMap.locations = List(InMemLocation(1), InMemLocation(2))
-
-    val stringsMap = RefMap.get(classOf[String], "strings")
-
-    List("hello", "world").foreach(string => stringsMap.put(InMemLocation(1), "string", string))
-  }
-
-  test("continuations should accomodate map") {
-    implicit val tx: Transporter = InMemTest.tx1
-    implicit val local: Location = InMemLocation(1)
-
-    RefMap.locations = List(InMemLocation(1), InMemLocation(2))
-
-    val stringsMap = RefMap.get(classOf[String], "strings")
-
-    List("hello", "world").map(string => stringsMap.put(InMemLocation(1), "string", string))
-  }
-
-  test("continuations should accomodate for comprehensions") {
-    implicit val tx: Transporter = InMemTest.tx1
-    implicit val local: Location = InMemLocation(1)
-
-    RefMap.locations = List(InMemLocation(1), InMemLocation(2))
-
-    val stringsMap = RefMap.get(classOf[String], "strings")
-
-    for (string <- List("hello", "world")) {
-      stringsMap.put(InMemLocation(1), "string", string)
+      assert(Some("1") === stringsMap.get("one"))
+      assert(Some("2") === stringsMap.get("two"))
+      assert(Some("1") === RefMap(classOf[String], "strings").get("one"))
     }
   }
 }

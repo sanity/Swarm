@@ -3,6 +3,7 @@ package swarm.data
 import swarm.Swarm.swarm
 import swarm.Swarm
 import swarm.transport.{Transporter, Location}
+import java.util.UUID
 
 /**
  * RefMap represents a map of Ref instances.
@@ -15,21 +16,33 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
   /**
    * Dereference and return the value (if any) referenced by the given key.
    */
-  // TODO remove spawnAndReturn call since it forces blocking and potentially unnecessary relocation as well as a narrow continuation delimitation
-  def get(key: String)(implicit tx: Transporter, local: Location): Option[A] =
-    map.get(key).map(tuple => Swarm.spawnAndReturn((new Ref(tuple._1, tuple._2, tuple._3))()))
+  def get(key: String): Option[A]@swarm = {
+    if (map.contains(key)) {
+      val tuple = map(key)
+      val ref = new Ref(tuple._1, tuple._2, tuple._3)
+      Some(ref())
+    } else {
+      None
+    }
+  }
 
   /**
    * Add the given data to the local map.
    * Create a new Ref instance in each node within the Swarm cluster to reference the single instance of the stored data.
    */
-  // TODO should spawn be removed here since it foces a narrow continuation delimitation?
-  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A], tx: Transporter, local: Location): Unit = {
-    val tuple = map.getOrElse(key, Swarm.spawnAndReturn{ val ref = Ref(location, value); (ref.typeClass, ref.location, ref.uid) })
-    val ref = new Ref(tuple._1, tuple._2, tuple._3)
-    Swarm.spawn{ ref.update(value); RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid)) }
+  def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+    if (map.contains(key)) {
+      // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
+      val tuple = map(key)
+      val ref = new Ref(tuple._1, tuple._2, tuple._3)
+      ref.update(value)
+    } else {
+      // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
+      val ref = Ref(location, value)
+      RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
+    }
   }
-  
+
   protected def put(key: String, tuple: Tuple3[Class[A], Location, Long]) {
     map(key) = tuple
   }
@@ -42,7 +55,7 @@ object RefMap {
 
   private[this] val map = new collection.mutable.HashMap[String, RefMap[_]]()
 
-  private[this] var _locations: List[Location] = _
+  private[this] var _locations: List[Location] = _ // TODO expunge this var
 
   /**
    * Crudely specify the locations in the Swarm cluster.
@@ -52,8 +65,6 @@ object RefMap {
   }
 
   def locations = _locations
-
-  def get[A](typeClass: Class[A], key: String)(implicit tx: Transporter, local: Location): RefMap[A] = Swarm.spawnAndReturn(RefMap(typeClass, key))
 
   /**
    * Generate a RefMap instance of the given type and key.

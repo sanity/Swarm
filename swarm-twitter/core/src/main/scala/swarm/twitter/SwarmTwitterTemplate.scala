@@ -3,7 +3,8 @@ package swarm.twitter
 import swarm.data.RefMap
 import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
-import java.util.Date
+import java.util.{UUID, Date}
+import swarm.{NoBee, Swarm}
 
 class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
@@ -15,7 +16,6 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   InetTransporter.listen(localPort)
 
   type Status = Tuple3[String, String, Date]
-  val stringsMap = RefMap.get(classOf[List[Status]], "statuses")
 
   get("/") {
     <html>
@@ -45,9 +45,12 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   get("/:userId") {
     val userId: String = params("userId")
     if (params.contains("status")) {
-      val status = params("status")
-      val statuses: List[Status] = stringsMap.get(userId).getOrElse(Nil)
-      stringsMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
+      Swarm.spawn {
+        val status = params("status")
+        val stringsMap = RefMap(classOf[List[Status]], "statuses")
+        val statuses: List[Status] = stringsMap.get(userId).getOrElse(Nil)
+        stringsMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
+      }
       redirect("/" + userId)
     } else {
       <html>
@@ -77,7 +80,26 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   }
 
   def statuses(userIds: List[String]): xml.NodeSeq = {
-    val statuses: List[Status] = userIds.flatMap(userId => stringsMap.get(userId).getOrElse(Nil)).sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
+    val uuid = UUID.randomUUID.toString
+
+    Swarm.spawn {
+      val stringsMap = RefMap(classOf[List[Status]], "statuses")
+      var statuses: List[Status] = Nil
+
+      // TODO create an implicit conversion so we can support for comprehensions within continuations, then use to iterate over userIds list
+
+      val ss1 = stringsMap.get("jmcdoe")
+      if (ss1 != None) statuses = statuses ::: ss1.get
+
+      val ss2 = stringsMap.get("maxpower")
+      if (ss2 != None) statuses = statuses ::: ss2.get
+
+      statuses = statuses.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
+      Swarm.saveFutureResult(uuid, statuses.toList)
+    }
+
+    val statuses = Swarm.getFutureResult(uuid).asInstanceOf[List[Status]] // TODO boo casting
+
     <h3>Statuses</h3>
     <div style="margin-bottom: 50px;">
       {
