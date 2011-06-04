@@ -84,18 +84,17 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
 
     Swarm.spawn {
       val stringsMap = RefMap(classOf[List[Status]], "statuses")
-      var statuses: List[Status] = Nil
+      var statusesList: List[Status] = Nil
 
       // TODO create an implicit conversion so we can support for comprehensions within continuations, then use to iterate over userIds list
+      Swarm.foreach(userIds, {
+        userId: String =>
+          val statuses = stringsMap.get(userId)
+          if (statuses != None) statusesList = statuses.get ::: statusesList
+      })
 
-      val ss1 = stringsMap.get("jmcdoe")
-      if (ss1 != None) statuses = statuses ::: ss1.get
-
-      val ss2 = stringsMap.get("maxpower")
-      if (ss2 != None) statuses = statuses ::: ss2.get
-
-      statuses = statuses.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
-      Swarm.saveFutureResult(uuid, statuses.toList)
+      statusesList = statusesList.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
+      Swarm.saveFutureResult(uuid, statusesList)
     }
 
     val statuses = Swarm.getFutureResult(uuid).asInstanceOf[List[Status]] // TODO boo casting
