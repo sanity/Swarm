@@ -82,6 +82,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   def statuses(userIds: List[String]): xml.NodeSeq = {
     val uuid = UUID.randomUUID.toString
 
+    // TODO it's unnecessarily expensive to move data from node to node simply to accumulate a resulting data set.  come up with some kind of client accumulator layer which collects data to be finally returned only once, wihtout passing it from node to node when unnecessary
     Swarm.spawn {
       val stringsMap = RefMap(classOf[List[Status]], "statuses")
       var statusesList: List[Status] = Nil
