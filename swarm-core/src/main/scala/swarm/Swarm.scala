@@ -87,7 +87,7 @@ object Swarm {
         } else {
           Swarm.continue(f)
         }
-      case RefBee(f, ref) => tx.transport(f, ref.location)
+      case RefBee(f, ref) => tx.transport(f, ref.location) // TODO track remote dereferences to use in balancing/redistributing data
       case IsBee(f, destination) if (tx.isLocal(destination)) => Swarm.continue(f)
       case IsBee(f, destination) => tx.transport(f, destination)
       case NoBee() =>
