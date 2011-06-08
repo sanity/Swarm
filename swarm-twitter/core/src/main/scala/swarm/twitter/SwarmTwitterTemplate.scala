@@ -48,9 +48,17 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
     if (params.contains("status")) {
       Swarm.spawn {
         val status = params("status")
-        val stringsMap = RefMap(classOf[List[Status]], "statuses")
-        val statuses: List[Status] = stringsMap.get(userId).getOrElse(Nil)
-        stringsMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
+        val statusesMap = RefMap(classOf[List[Status]], "statuses")
+        val statuses: List[Status] = statusesMap.get(userId).getOrElse(Nil)
+        statusesMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
+      }
+      redirect("/" + userId)
+    } else if (params.contains("followee")) {
+      Swarm.spawn {
+        val followee = params("followee")
+        val followeesMap = RefMap(classOf[List[String]], "followees")
+        val followees: List[String] = followeesMap.get(userId).getOrElse(Nil)
+        followeesMap.put(local, userId, followee :: followees)
       }
       redirect("/" + userId)
     } else {
@@ -64,12 +72,17 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
             <h2>
               {userId}
             </h2>
-            {statuses(List(userId))}
+            {statuses(userAndFollowees(userId))}
             <hr/>
+            <form action={"/" + userId} method="get">
+              Follow a user:
+              <input type="text" size="15" name="followee"/>
+              <input type="submit" value="follow"/>
+            </form>
             <form action={"/" + userId} method="get">
               Post a new status:
               <input type="text" size="15" name="status"/>
-              <input type="submit" value="submit"/>
+              <input type="submit" value="post"/>
             </form>
             <div><a href={"http://localhost:8080/" + userId}>view node 1</a></div>
             <div><a href={"http://localhost:8081/" + userId}>view node 2</a></div>
@@ -80,18 +93,22 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
     }
   }
 
+  def userAndFollowees(userId: String): List[String] = {
+    List(userId)
+  }
+
   def statuses(userIds: List[String]): xml.NodeSeq = {
     val uuid = UUID.randomUUID.toString
 
     // TODO it's unnecessarily expensive to move data from node to node simply to accumulate a resulting data set.  come up with some kind of client accumulator layer which collects data to be finally returned only once, wihtout passing it from node to node when unnecessary
     Swarm.spawn {
-      val stringsMap = RefMap(classOf[List[Status]], "statuses")
+      val statusesMap = RefMap(classOf[List[Status]], "statuses")
       var statusesList: List[Status] = Nil
 
       // TODO create an implicit conversion so we can support for comprehensions within continuations, then use to iterate over userIds list
       Swarm.foreach(userIds, {
         userId: String =>
-          val statuses = stringsMap.get(userId)
+          val statuses = statusesMap.get(userId)
           if (statuses != None) statusesList = statuses.get ::: statusesList
       })
 
