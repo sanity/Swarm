@@ -6,6 +6,7 @@ import org.scalatra._
 import java.util.{UUID, Date}
 import swarm.{NoBee, Swarm}
 
+// TODO consider using comet to avoid annoyingly necessary refreshing
 class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
   implicit val local: Location = new InetLocation(java.net.InetAddress.getLocalHost, localPort)
