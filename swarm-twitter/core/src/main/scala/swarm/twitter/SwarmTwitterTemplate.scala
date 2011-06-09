@@ -6,6 +6,47 @@ import org.scalatra._
 import java.util.{UUID, Date}
 import swarm.{NoBee, Swarm}
 
+// This is necessary because of Scalatra's use of DynamicVariable instances (to hold thread local HTTP request and response objects) which don't serialize during Swarm moves
+object SwarmBridge {
+
+  type Status = Tuple3[String, String, Date]
+  def statuses(userIds: List[String])(implicit tx: Transporter, local: Location): List[Status] = {
+    val uuid = UUID.randomUUID.toString
+
+    // TODO it's unnecessarily expensive to move data from node to node simply to accumulate a resulting data set.  come up with some kind of client accumulator layer which collects data to be finally returned only once, wihtout passing it from node to node when unnecessary
+    Swarm.spawn {
+      val statusesMap = RefMap(classOf[List[Status]], "statuses")
+      var statusesList: List[Status] = Nil
+
+      // TODO create an implicit conversion so we can support for comprehensions within continuations, then use to iterate over userIds list
+      Swarm.foreach(userIds, {
+        userId: String =>
+          val statuses = statusesMap.get(userId)
+          if (statuses != None) statusesList = statuses.get ::: statusesList
+      })
+
+      statusesList = statusesList.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
+      Swarm.moveTo(local)
+      Swarm.saveFutureResult(uuid, statusesList)
+    }
+
+    Swarm.getFutureResult(uuid).asInstanceOf[List[Status]] // TODO boo casting
+  }
+
+  def addStatus(userId: String, status: String)(implicit tx: Transporter, local: Location) = Swarm.spawn {
+    val statusesMap = RefMap(classOf[List[Status]], "statuses")
+    val statuses: List[Status] = statusesMap.get(userId).getOrElse(Nil)
+    statusesMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
+  }
+
+  def addFollowee(userId: String, followee: String)(implicit tx: Transporter, local: Location) = Swarm.spawn {
+    val followeesMap = RefMap(classOf[List[String]], "followees")
+    val followees: List[String] = followeesMap.get(userId).getOrElse(Nil)
+    followeesMap.put(local, userId, followee :: followees)
+  }
+
+}
+
 // TODO consider using comet to avoid annoyingly necessary refreshing
 class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
 
@@ -46,20 +87,12 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   get("/:userId") {
     val userId: String = params("userId")
     if (params.contains("status")) {
-      Swarm.spawn {
-        val status = params("status")
-        val statusesMap = RefMap(classOf[List[Status]], "statuses")
-        val statuses: List[Status] = statusesMap.get(userId).getOrElse(Nil)
-        statusesMap.put(local, userId, new Status(userId, status, new Date) :: statuses)
-      }
+      val status = params("status")
+      SwarmBridge.addStatus(userId, status)
       redirect("/" + userId)
     } else if (params.contains("followee")) {
-      Swarm.spawn {
-        val followee = params("followee")
-        val followeesMap = RefMap(classOf[List[String]], "followees")
-        val followees: List[String] = followeesMap.get(userId).getOrElse(Nil)
-        followeesMap.put(local, userId, followee :: followees)
-      }
+      val followee = params("followee")
+      SwarmBridge.addFollowee(userId, followee)
       redirect("/" + userId)
     } else {
       <html>
@@ -98,26 +131,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   }
 
   def statuses(userIds: List[String]): xml.NodeSeq = {
-    val uuid = UUID.randomUUID.toString
-
-    // TODO it's unnecessarily expensive to move data from node to node simply to accumulate a resulting data set.  come up with some kind of client accumulator layer which collects data to be finally returned only once, wihtout passing it from node to node when unnecessary
-    Swarm.spawn {
-      val statusesMap = RefMap(classOf[List[Status]], "statuses")
-      var statusesList: List[Status] = Nil
-
-      // TODO create an implicit conversion so we can support for comprehensions within continuations, then use to iterate over userIds list
-      Swarm.foreach(userIds, {
-        userId: String =>
-          val statuses = statusesMap.get(userId)
-          if (statuses != None) statusesList = statuses.get ::: statusesList
-      })
-
-      statusesList = statusesList.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
-      Swarm.saveFutureResult(uuid, statusesList)
-    }
-
-    val statuses = Swarm.getFutureResult(uuid).asInstanceOf[List[Status]] // TODO boo casting
-
+    val statuses = SwarmBridge.statuses(userIds)
     <h3>Statuses</h3>
     <div style="margin-bottom: 50px;">
       {

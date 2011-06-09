@@ -94,13 +94,13 @@ object Swarm {
     }
   }
 
-  private class Future(private var _value: Any) {
+  private class Future(private var _value: Any = null) {
 
     def value = _value
 
-    def value_=(value: Any) {
+    def value_=(theValue: Any) {
       synchronized {
-        _value = value
+        _value = theValue
         notify
       }
     }
@@ -119,9 +119,9 @@ object Swarm {
 
   def getFutureResult(uuid: String) = getFuture(uuid).get
 
-  private def getFuture(uuid: String) = {
+  private def getFuture(uuid: String) = synchronized {
     if (!futures.contains(uuid)) {
-      futures(uuid) = new Future(uuid)
+      futures(uuid) = new Future()
     }
     futures(uuid)
   }
