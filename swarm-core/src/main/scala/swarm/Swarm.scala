@@ -105,7 +105,7 @@ object Swarm {
 
     def get: Any = {
       synchronized {
-        wait
+        if (_value == null) wait
         value
       }
     }
