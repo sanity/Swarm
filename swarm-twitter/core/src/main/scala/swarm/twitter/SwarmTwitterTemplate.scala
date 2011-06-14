@@ -1,10 +1,10 @@
 package swarm.twitter
 
-import swarm.data.RefMap
 import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
 import java.util.{UUID, Date}
-import swarm.{NoBee, Swarm}
+import swarm.Swarm
+import swarm.collection.RefMap
 
 // This is necessary because of Scalatra's use of DynamicVariable instances (to hold thread local HTTP request and response objects) which don't serialize during Swarm moves
 object SwarmBridge {

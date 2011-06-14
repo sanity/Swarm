@@ -3,6 +3,7 @@ package swarm.data
 import org.scalatest.FunSuite
 import swarm.transport.{Location, Transporter}
 import swarm._
+import collection.RefMap
 
 class RefTest extends FunSuite {
 

@@ -4,8 +4,6 @@ import data.{Store, Ref}
 import transport._
 import util.continuations._
 import java.util.concurrent.Executors
-import collection.IterableLike
-import collection.generic.CanBuildFrom
 
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
@@ -113,7 +111,7 @@ object Swarm {
     }
   }
 
-  private[this] val futures = new collection.mutable.HashMap[String, Future]()
+  private[this] val futures = new scala.collection.mutable.HashMap[String, Future]()
 
   def saveFutureResult(uuid: String, value: Any) = getFuture(uuid).value = value
 

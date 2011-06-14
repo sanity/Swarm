@@ -1,9 +1,10 @@
-package swarm.data
+package swarm.collection
 
 import swarm.Swarm._
 import swarm.Swarm
 import swarm.transport.{Transporter, Location}
 import java.util.UUID
+import swarm.data.Ref
 
 /**
  * RefMap represents a map of Ref instances.
