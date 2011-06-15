@@ -12,6 +12,26 @@ class InMemTest extends FunSuite {
     Swarm.execute(reset(f()))(InMemTest.getTransporter)
   }
 
+  test("dsl should change location and run execution") {
+    import swarm.Swarm.at
+
+    implicit val local: Location = InMemLocation(1)
+
+    InMemTest.currentLocation = Some(InMemLocation(1))
+
+    execute {
+      Unit =>
+
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        at(InMemLocation(2)) run {
+          assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+        }
+
+        NoBee()
+    }
+  }
+
+  // TODO this fails sometimes, then passes again without any changes
   test("explicit relocate() transports data") {
     implicit val local: Location = InMemLocation(1)
 

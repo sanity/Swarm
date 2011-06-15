@@ -132,4 +132,17 @@ object Swarm {
         foreach(moreXs, f)
     }
   }
+
+  class ToRun(location: Location) {
+    def run(f: => Any@swarm): Any@swarm = {
+      moveTo(location)
+      f
+    }
+  }
+
+  object ToRun {
+    def apply(location: Location) = new ToRun(location)
+  }
+
+  def at(location: Location) = ToRun(location)
 }
