@@ -133,16 +133,10 @@ object Swarm {
     }
   }
 
-  class ToRun(location: Location) {
+  def at(location: Location) = new {
     def run(f: => Any@swarm): Any@swarm = {
       moveTo(location)
       f
     }
   }
-
-  object ToRun {
-    def apply(location: Location) = new ToRun(location)
-  }
-
-  def at(location: Location) = ToRun(location)
 }
