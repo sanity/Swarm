@@ -31,6 +31,30 @@ class InMemTest extends FunSuite {
     }
   }
 
+  test("dsl should save future value") {
+    import swarm.Swarm.remember
+
+    implicit val local: Location = InMemLocation(1)
+    implicit val tx: Transporter = new InMemTransporter(InMemLocation(1))
+
+    InMemTest.currentLocation = Some(InMemLocation(1))
+
+    execute {
+      Unit =>
+
+        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        val uuid = remember {
+          Swarm.moveTo(InMemLocation(2))
+          1
+        }
+
+        Swarm.moveTo(local)
+        assert(1 === Swarm.getFutureResult(uuid))
+
+        NoBee()
+    }
+  }
+
   // TODO this fails sometimes, then passes again without any changes
   test("explicit relocate() transports data") {
     implicit val local: Location = InMemLocation(1)

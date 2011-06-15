@@ -10,11 +10,10 @@ import swarm.collection.RefMap
 object SwarmBridge {
 
   type Status = Tuple3[String, String, Date]
-  def statuses(userIds: List[String])(implicit tx: Transporter, local: Location): List[Status] = {
-    val uuid = UUID.randomUUID.toString
 
-    // TODO it's unnecessarily expensive to move data from node to node simply to accumulate a resulting data set.  come up with some kind of client accumulator layer which collects data to be finally returned only once, wihtout passing it from node to node when unnecessary
-    Swarm.spawn {
+  def statuses(userIds: List[String])(implicit tx: Transporter, local: Location): List[Status] = {
+    val uuid = Swarm.remember {
+
       val statusesMap = RefMap(classOf[List[Status]], "statuses")
       var statusesList: List[Status] = Nil
 
@@ -25,11 +24,8 @@ object SwarmBridge {
           if (statuses != None) statusesList = statuses.get ::: statusesList
       })
 
-      statusesList = statusesList.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
-      Swarm.moveTo(local)
-      Swarm.saveFutureResult(uuid, statusesList)
+      statusesList.sortWith((s1, s2) => (s1._3 compareTo s2._3) >= 0)
     }
-
     Swarm.getFutureResult(uuid).asInstanceOf[List[Status]] // TODO boo casting
   }
 
@@ -62,23 +58,38 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   get("/") {
     <html>
       <head>
-        <title>SwarmTwitter :: {nodeName}</title>
+        <title>SwarmTwitter ::
+          {nodeName}
+        </title>
       </head>
       <body>
         <div style="width: 800px; margin-left: auto; margin-right: auto;">
-          <h1>SwarmTwitter :: {nodeName}</h1>
-          <p>Welcome to SwarmTwitter, a Twitter simulator built using <a href="https://github.com/sanity/Swarm">Swarm</a>, a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
-          <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to <span style="font-face: monospace;">/&lt;username&gt;</span>.</p>
-          <div><a href={"http://localhost:8080/"}>view node 1</a></div>
-          <div><a href={"http://localhost:8081/"}>view node 2</a></div>
+          <h1>SwarmTwitter ::
+            {nodeName}
+          </h1>
+          <p>Welcome to SwarmTwitter, a Twitter simulator built using
+            <a href="https://github.com/sanity/Swarm">Swarm</a>
+            , a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
+          <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to
+            <span style="font-face: monospace;">/
+              &lt;
+              username
+              &gt;
+            </span>
+            .</p>
+          <div>
+            <a href={"http://localhost:8080/"}>view node 1</a>
+          </div>
+          <div>
+            <a href={"http://localhost:8081/"}>view node 2</a>
+          </div>
           <h2>Sample users</h2>
           <div>
             <a href="/jmcdoe">jmcdoe</a>
           </div>
           <div>
             <a href="/maxpower">maxpower</a>
-          </div>
-          {statuses(List("jmcdoe", "maxpower"))}
+          </div>{statuses(List("jmcdoe", "maxpower"))}
         </div>
       </body>
     </html>
@@ -97,29 +108,37 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
     } else {
       <html>
         <head>
-          <title>SwarmTwitter :: {nodeName}</title>
+          <title>SwarmTwitter ::
+            {nodeName}
+          </title>
         </head>
         <body>
           <div style="width: 800px; margin-left: auto; margin-right: auto;">
-            <h1>SwarmTwitter :: {nodeName}</h1>
+            <h1>SwarmTwitter ::
+              {nodeName}
+            </h1>
             <h2>
               {userId}
-            </h2>
-            {statuses(userAndFollowees(userId))}
-            <hr/>
+            </h2>{statuses(userAndFollowees(userId))}<hr/>
             <form action={"/" + userId} method="get">
               Follow a user:
-              <input type="text" size="15" name="followee"/>
-              <input type="submit" value="follow"/>
+                <input type="text" size="15" name="followee"/>
+                <input type="submit" value="follow"/>
             </form>
             <form action={"/" + userId} method="get">
               Post a new status:
-              <input type="text" size="15" name="status"/>
-              <input type="submit" value="post"/>
+                <input type="text" size="15" name="status"/>
+                <input type="submit" value="post"/>
             </form>
-            <div><a href={"http://localhost:8080/" + userId}>view node 1</a></div>
-            <div><a href={"http://localhost:8081/" + userId}>view node 2</a></div>
-            <div><a href="/">go home</a></div>
+            <div>
+              <a href={"http://localhost:8080/" + userId}>view node 1</a>
+            </div>
+            <div>
+              <a href={"http://localhost:8081/" + userId}>view node 2</a>
+            </div>
+            <div>
+              <a href="/">go home</a>
+            </div>
           </div>
         </body>
       </html>
@@ -133,15 +152,17 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   def statuses(userIds: List[String]): xml.NodeSeq = {
     val statuses = SwarmBridge.statuses(userIds)
     <h3>Statuses</h3>
-    <div style="margin-bottom: 50px;">
-      {
-        statuses.map(status =>
-          <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
-            <span style="color: #9999ff">{status._1}&gt;</span> {status._2} <span style="float: right; color: #999999; font-size: 75%">{status._3}</span>
-          </div>
-        ).toSeq
-      }
-    </div>
+      <div style="margin-bottom: 50px;">
+        {statuses.map(status =>
+        <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
+          <span style="color: #9999ff">
+            {status._1}&gt;
+          </span>{status._2}<span style="float: right; color: #999999; font-size: 75%">
+          {status._3}
+        </span>
+        </div>
+      ).toSeq}
+      </div>
   }
 
   protected def contextPath = request.getContextPath

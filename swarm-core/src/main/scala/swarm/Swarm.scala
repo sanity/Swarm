@@ -4,6 +4,7 @@ import data.{Store, Ref}
 import transport._
 import util.continuations._
 import java.util.concurrent.Executors
+import java.util.UUID
 
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
@@ -138,5 +139,17 @@ object Swarm {
       moveTo(location)
       f
     }
+  }
+
+  def remember(f: => Any@swarm)(implicit tx: Transporter, local: Location): String = {
+    val uuid = UUID.randomUUID.toString
+
+    Swarm.spawn {
+      val x = f
+      Swarm.moveTo(local)
+      Swarm.saveFutureResult(uuid, x)
+    }
+
+    uuid
   }
 }
