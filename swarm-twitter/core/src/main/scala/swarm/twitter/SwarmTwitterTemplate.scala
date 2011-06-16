@@ -58,25 +58,15 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   get("/") {
     <html>
       <head>
-        <title>SwarmTwitter ::
-          {nodeName}
+        <title>SwarmTwitter :: {nodeName}
         </title>
       </head>
       <body>
         <div style="width: 800px; margin-left: auto; margin-right: auto;">
-          <h1>SwarmTwitter ::
-            {nodeName}
+          <h1>SwarmTwitter :: {nodeName}
           </h1>
-          <p>Welcome to SwarmTwitter, a Twitter simulator built using
-            <a href="https://github.com/sanity/Swarm">Swarm</a>
-            , a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
-          <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to
-            <span style="font-face: monospace;">/
-              &lt;
-              username
-              &gt;
-            </span>
-            .</p>
+          <p>Welcome to SwarmTwitter, a Twitter simulator built using <a href="https://github.com/sanity/Swarm">Swarm</a>, a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
+          <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to <span style="font-face: monospace;">/&lt;username&gt;</span>.</p>
           <div>
             <a href={"http://localhost:8080/"}>view node 1</a>
           </div>
@@ -108,14 +98,12 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
     } else {
       <html>
         <head>
-          <title>SwarmTwitter ::
-            {nodeName}
+          <title>SwarmTwitter :: {nodeName}
           </title>
         </head>
         <body>
           <div style="width: 800px; margin-left: auto; margin-right: auto;">
-            <h1>SwarmTwitter ::
-              {nodeName}
+            <h1>SwarmTwitter :: {nodeName}
             </h1>
             <h2>
               {userId}
