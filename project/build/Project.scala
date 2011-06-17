@@ -10,7 +10,7 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     swarm_twitter.swarm_twitter_node1.jettyRun.run
     swarm_twitter.swarm_twitter_node2.jettyRun.run
     None
-  } dependsOn(swarm_twitter.swarm_twitter_node1.`compile`, swarm_twitter.swarm_twitter_node2.`compile`)
+  } dependsOn (swarm_twitter.swarm_twitter_node1.`compile`, swarm_twitter.swarm_twitter_node2.`compile`)
 
   trait CompilerOptions extends BasicScalaProject with AutoCompilerPlugins {
     override def compileOptions = super.compileOptions ++ compileOptions("-P:continuations:enable") ++ compileOptions("-unchecked")
@@ -22,7 +22,19 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val cont = compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.0")
   }
 
-  class SwarmDemosProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions
+  class SwarmDemosProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions {
+    lazy val listen = task {
+      args =>
+        val forkConfiguration = new ForkScalaRun {
+          override def workingDirectory = Some(info.projectPath.asFile)
+
+          override def scalaJars = buildScalaInstance.libraryJar ::
+            buildScalaInstance.compilerJar :: Nil
+        }
+        val forkRun = new ForkRun(forkConfiguration)
+        runTask(Some("swarm.demos.Listen"), runClasspath, args)(forkRun)
+    }
+  }
 
   class SwarmTwitterProject(info: ProjectInfo) extends ParentProject(info) {
     lazy val swarm_twitter_core = project("core", "swarm-twitter-core", new SwarmTwitterCoreProject(_), swarm_core)
