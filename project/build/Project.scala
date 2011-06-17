@@ -23,6 +23,7 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
   }
 
   class SwarmDemosProject(info: ProjectInfo) extends DefaultProject(info) with CompilerOptions {
+    // this task will run the Listen application, but it is not yet forking as it should
     lazy val listen = task {
       args =>
         val forkConfiguration = new ForkScalaRun {
