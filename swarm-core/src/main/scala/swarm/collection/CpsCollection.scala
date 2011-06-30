@@ -1,39 +1,43 @@
+package swarm.collection
+
 import scala.collection.IterableLike
 import scala.collection.GenTraversableOnce
 import scala.collection.generic.CanBuildFrom
 import scala.util.continuations._
+import swarm.Bee
 
+// TODO these aren't quite working yet due to unserializability
 object CpsCollection {
   // implicit coversion from iterable-like collections to cps-friendly collections
   implicit def cpsIterable[A, Repr](xs: IterableLike[A, Repr]) = new {
     def cps = new {
-      def foreach[B](f: A => Any@cpsParam[Unit, Unit]): Unit@cpsParam[Unit, Unit] = {
+      def foreach[B](f: A => Any@cpsParam[Bee, Bee]): Unit@cpsParam[Bee, Bee] = {
         val it = xs.iterator
         while(it.hasNext) f(it.next)
       }
-      def map[B, That](f: A => B@cpsParam[Unit, Unit])(implicit cbf: CanBuildFrom[Repr, B, That]): That@cpsParam[Unit, Unit] = {
+      def map[B, That](f: A => B@cpsParam[Bee, Bee])(implicit cbf: CanBuildFrom[Repr, B, That]): That@cpsParam[Bee, Bee] = {
         val b = cbf(xs.repr)
         foreach(b += f(_))
         b.result
       }
-      def flatMap[B, That](f: A => GenTraversableOnce[B]@cpsParam[Unit, Unit])(implicit cbf: CanBuildFrom[Repr, B, That]): That@cpsParam[Unit, Unit] = {
+      def flatMap[B, That](f: A => GenTraversableOnce[B]@cpsParam[Bee, Bee])(implicit cbf: CanBuildFrom[Repr, B, That]): That@cpsParam[Bee, Bee] = {
         val b = cbf(xs.repr)
         for (x <- this) b ++= f(x)
         b.result
       }
-      def filter(f: A => Boolean@cpsParam[Unit, Unit])(implicit cbf: CanBuildFrom[Repr, A, Repr]): Repr@cpsParam[Unit, Unit] = {
+      def filter(f: A => Boolean@cpsParam[Bee, Bee])(implicit cbf: CanBuildFrom[Repr, A, Repr]): Repr@cpsParam[Bee, Bee] = {
         val b = cbf(xs.repr)
         for (x <- this)
           if (f(x)) b += x
         b.result
       }
-      def foldLeft[B](z: B)(f: (B, A) => B@cpsParam[Unit, Unit]): B@cpsParam[Unit, Unit] = {
+      def foldLeft[B](z: B)(f: (B, A) => B@cpsParam[Bee, Bee]): B@cpsParam[Bee, Bee] = {
         val it = xs.iterator
         var acc: B = z
         while(it.hasNext) acc = f(acc, it.next)
         acc
       }
-      def reduceLeft[B >: A](f: (B, A) => B@cpsParam[Unit, Unit]): B@cpsParam[Unit, Unit] = {
+      def reduceLeft[B >: A](f: (B, A) => B@cpsParam[Bee, Bee]): B@cpsParam[Bee, Bee] = {
         if (xs.isEmpty)
           throw new UnsupportedOperationException("empty.reduceLeft")
 

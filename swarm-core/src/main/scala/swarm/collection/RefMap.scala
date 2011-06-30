@@ -5,6 +5,7 @@ import swarm.Swarm
 import swarm.transport.{Transporter, Location}
 import java.util.UUID
 import swarm.data.Ref
+import swarm.collection.CpsCollection.cpsIterable
 
 /**
  * RefMap represents a map of Ref instances.
@@ -87,5 +88,10 @@ object RefMap {
         Swarm.moveTo(location)
         RefMap(tuple._1, refMapKey).put(key, tuple)
     })
+    // TODO switch above with below once serializability is resolved
+    //locations.cps.foreach{ location: Location =>
+    //  Swarm.moveTo(location)
+    //  RefMap(tuple._1, refMapKey).put(key, tuple)
+    //}
   }
 }
