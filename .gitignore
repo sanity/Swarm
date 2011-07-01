@@ -9,3 +9,6 @@ src_managed/
 project/boot/
 project/plugins/project/
 lib_managed/
+.classpath
+.settings
+.project
