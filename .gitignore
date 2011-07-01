@@ -12,3 +12,5 @@ lib_managed/
 .classpath
 .settings
 .project
+.scala_dependencies
+
