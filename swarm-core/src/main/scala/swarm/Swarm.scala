@@ -15,6 +15,7 @@ object Swarm {
 
   type swarm = cpsParam[Bee, Bee]
 
+  // TODO this is pretty hacktastic
   val executor = Executors.newFixedThreadPool(10)
 
   /**
