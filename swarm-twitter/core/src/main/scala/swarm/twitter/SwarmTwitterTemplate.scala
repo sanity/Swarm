@@ -41,6 +41,12 @@ object SwarmBridge {
     followeesMap.put(local, userId, followee :: followees)
   }
 
+  def followeeIds(userId: String)(implicit tx: Transporter, local: Location): List[String] = {
+    val uuid = Swarm.remember {
+      RefMap(classOf[List[String]], "followees").get(userId).getOrElse(Nil)
+    }
+    Swarm.getFutureResult(uuid).asInstanceOf[List[String]]
+  }
 }
 
 // TODO consider using comet to avoid annoyingly necessary refreshing
@@ -134,7 +140,7 @@ class SwarmTwitterTemplate(nodeName: String, localPort: Short, remotePort: Short
   }
 
   def userAndFollowees(userId: String): List[String] = {
-    List(userId)
+    userId :: SwarmBridge.followeeIds(userId)
   }
 
   def statuses(userIds: List[String]): xml.NodeSeq = {
