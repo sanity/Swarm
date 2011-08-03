@@ -46,7 +46,9 @@ class SwarmProject(info: ProjectInfo) extends ParentProject(info) {
   trait ScalatraProject {
     lazy val sonatypeNexusSnapshots = "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     lazy val sonatypeNexusReleases = "Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases"
-    lazy val scalatra = "org.scalatra" %% "scalatra" % "2.0.0-SNAPSHOT"
+    lazy val scalatraVersion = "2.0.0-SNAPSHOT"
+    lazy val scalatra = "org.scalatra" %% "scalatra" % scalatraVersion
+    lazy val auth = "org.scalatra" %% "scalatra-auth" % scalatraVersion
     lazy val jetty6 = "org.mortbay.jetty" % "jetty" % "6.1.22" % "test"
     lazy val servletApi = "javax.servlet" % "servlet-api" % "2.5" % "provided"
   }
