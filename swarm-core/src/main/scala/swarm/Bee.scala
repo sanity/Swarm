@@ -1,10 +1,10 @@
 package swarm
 
 /**
- * The Bee trait sits at the boundaries of the cps type declarations in Swarm, 
- * and represents the continuation yet to execute.  Different implementations 
- * can be used to delimit the end of a Swarm-enabled function, mark a 
- * continuation for transfer to another location, or hold a (potentially 
+ * The Bee trait sits at the boundaries of the cps type declarations in Swarm,
+ * and represents the continuation yet to execute.  Different implementations
+ * can be used to delimit the end of a Swarm-enabled function, mark a
+ * continuation for transfer to another location, or hold a (potentially
  * remote) reference to data.
  */
 sealed trait Bee extends Serializable
