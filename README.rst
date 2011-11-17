@@ -18,38 +18,31 @@ Quick Start Guide
 
 These instructions assume you are using a Linux or Mac-like system. If you are using Windows, we recommending using Cygwin which should allow you to follow these instructions more-or-less verbatim.
 
-Install Scala 2.9.0.1
+Install Scala 2.9.1
 -------------------
 
 http://www.scala-lang.org/downloads
 
 
-Install sbt 0.7.7
------------------
-http://code.google.com/p/simple-build-tool/wiki/Setup
 
 Download Swarm
 --------------
 
 git clone git@github.com:sanity/Swarm.git
 
-Resolve dependencies
---------------------
-
-``> sbt update``
 
 Run the demo
 ------------
 
 From the Swarm directory, in one console window:
 
-``> sbt "project swarm-demos" run``
+``$ sbt/sbt "project swarm-demos" run``
 
 When prompted, select the class ``swarm.demos.Listen``
 
 Then, in another console window:
 
-``> sbt "project swarm-demos" run``
+``$ sbt/sbt "project swarm-demos" run``
 
 When prompted, select the class ``swarm.demos.ExplicitMoveTo1``
 
@@ -60,7 +53,7 @@ Run the Twitter simulator
 
 From the sbt console, run the ``twitter-demo`` task:
 
-``$ sbt``
+``$ sbt/sbt``
 
 ``> twitter-demo``
 
