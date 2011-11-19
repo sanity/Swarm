@@ -24,7 +24,6 @@ Install Scala 2.9.1
 http://www.scala-lang.org/downloads
 
 
-
 Download Swarm
 --------------
 
@@ -36,25 +35,19 @@ Run the demo
 
 From the Swarm directory, in one console window:
 
-``$ sbt/sbt "project swarm-demos" run``
-
-When prompted, select the class ``swarm.demos.Listen``
+``$ sbt/sbt "demos/run-main swarm.demos.Listen"``
 
 Then, in another console window:
 
-``$ sbt/sbt "project swarm-demos" run``
-
-When prompted, select the class ``swarm.demos.ExplicitMoveTo1``
+``$ sbt/sbt "demos/run-main swarm.demos.ExplicitMoveTo1"``
 
 In this demo keep an eye on both consoles, you will be asked for input in one console, then the other.
 
 Run the Twitter simulator
 -------------------------
 
-From the sbt console, run the ``twitter-demo`` task:
+From the command line, launch the Twitter demo:
 
-``$ sbt/sbt``
-
-``> twitter-demo``
+``$ sbt/sbt "demos/run-main swarm.demos.SwarmTwitter"``
 
 In a Web browser, navigate to http://localhost:8080/ and http://localhost:8081/ to interact with each node.

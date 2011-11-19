@@ -13,4 +13,4 @@ lib_managed/
 .settings
 .project
 .scala_dependencies
-
+*.swp
