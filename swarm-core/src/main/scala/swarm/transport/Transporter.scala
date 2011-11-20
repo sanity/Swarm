@@ -37,7 +37,7 @@ object InetTransporter extends Transporter with Logs {
     }
   }
 
-  def listen(port: Short)(implicit tx: Transporter) {
+  def listen(port: Int)(implicit tx: Transporter) {
     _local = Some(new InetLocation(localHost, port))
 
     val server = new java.net.ServerSocket(port);

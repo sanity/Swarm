@@ -57,13 +57,13 @@ object RefMap {
 
   private[this] val map = new collection.mutable.HashMap[String, RefMap[_]]()
 
-  private[this] var _locations: List[Location] = _ // TODO expunge this var
+  private[this] var _locations: List[Location] = Nil // TODO expunge this var
 
   /**
    * Crudely specify the locations in the Swarm cluster.
    */
-  def locations_=(locations: List[Location]) {
-    _locations = locations
+  def add(location: Location) {
+    _locations = location :: locations
   }
 
   def locations = _locations

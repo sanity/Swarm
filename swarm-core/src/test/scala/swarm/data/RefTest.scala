@@ -12,7 +12,8 @@ class RefTest extends FunSuite {
     implicit val local: Location = InMemLocation(1)
 
     Swarm.spawn {
-      RefMap.locations = List(InMemLocation(1), InMemLocation(2))
+      RefMap.add(InMemLocation(1))
+      RefMap.add(InMemLocation(2))
 
       val stringsMap = RefMap(classOf[String], "strings")
 

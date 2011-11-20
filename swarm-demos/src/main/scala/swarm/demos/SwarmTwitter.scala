@@ -1,8 +1,8 @@
 package swarm.demos
 
-import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
+import swarm.transport.{ Location, InetLocation, Transporter, InetTransporter }
 import org.scalatra._
-import java.util.{UUID, Date}
+import java.util.{ UUID, Date }
 import swarm.Swarm
 import swarm.collection.RefMap
 
@@ -10,13 +10,13 @@ object SwarmTwitter extends App {
   import org.mortbay.jetty._
   import org.mortbay.jetty.servlet._
 
-  launchNode("Node 1", 8080, 9998, 9997)
-  launchNode("Node 2", 8081, 9997, 9998)
+  val jettyPorts = List(8080 to 8083).flatten
+  for (jettyPort <- jettyPorts) launchNode(jettyPort, (jettyPort + 1000))
 
-  def launchNode(name: String, jettyPort: Int, localSwarmPort: Short, remoteSwarmPort: Short) = {
+  def launchNode(jettyPort: Int, localSwarmPort: Int) = {
     val server = new Server(jettyPort)
     val context = new Context(server, "/", Context.SESSIONS)
-    val node = new swarm.demos.SwarmTwitter(name, localSwarmPort, remoteSwarmPort)
+    val node = new SwarmTwitter(localSwarmPort)
     context.addServlet(new ServletHolder(node), "/*")
     server.start();
   }
@@ -66,13 +66,13 @@ object SwarmBridge {
 }
 
 // TODO consider using comet to avoid annoyingly necessary refreshing
-class SwarmTwitter(nodeName: String, localPort: Short, remotePort: Short) extends ScalatraServlet with UrlSupport {
+class SwarmTwitter(localPort: Int) extends ScalatraServlet with UrlSupport {
 
   implicit val local: Location = new InetLocation(java.net.InetAddress.getLocalHost, localPort)
-  val remote: InetLocation = new InetLocation(java.net.InetAddress.getLocalHost, remotePort)
   implicit val tx: Transporter = InetTransporter
 
-  RefMap.locations = List(local, remote)
+  RefMap.add(local)
+  
   InetTransporter.listen(localPort)
 
   type Status = Tuple3[String, String, Date]
@@ -80,28 +80,30 @@ class SwarmTwitter(nodeName: String, localPort: Short, remotePort: Short) extend
   get("/") {
     <html>
       <head>
-        <title>SwarmTwitter :: {nodeName}
+        <title>
+          { "SwarmTwitter on " + local.toString }
         </title>
       </head>
       <body>
         <div style="width: 800px; margin-left: auto; margin-right: auto;">
-          <h1>SwarmTwitter :: {nodeName}
+          <h1>
+            { "SwarmTwitter on " + local.toString }
           </h1>
           <p>Welcome to SwarmTwitter, a Twitter simulator built using <a href="https://github.com/sanity/Swarm">Swarm</a>, a framework allowing the creation of web applications which can scale transparently through a novel portable continuation-based approach.</p>
           <p>To use SwarmTwitter, follow the links below to act as any of the sample users, or add your own users by browsing to <span style="font-face: monospace;">/&lt;username&gt;</span>.</p>
-          <div>
-            <a href={"http://localhost:8080/"}>view node 1</a>
-          </div>
-          <div>
-            <a href={"http://localhost:8081/"}>view node 2</a>
-          </div>
+          {
+            SwarmTwitter.jettyPorts.map(i =>
+              <div>
+                <a href={ "http://localhost:" + i }>{ "http://localhost:" + i }</a>
+              </div>).toSeq
+          }
           <h2>Sample users</h2>
           <div>
             <a href="/jmcdoe">jmcdoe</a>
           </div>
           <div>
             <a href="/maxpower">maxpower</a>
-          </div>{statuses(List("jmcdoe", "maxpower"))}
+          </div>{ statuses(List("jmcdoe", "maxpower")) }
         </div>
       </body>
     </html>
@@ -120,32 +122,34 @@ class SwarmTwitter(nodeName: String, localPort: Short, remotePort: Short) extend
     } else {
       <html>
         <head>
-          <title>SwarmTwitter :: {nodeName}
+          <title>
+            { "SwarmTwitter on " + local.toString }
           </title>
         </head>
         <body>
           <div style="width: 800px; margin-left: auto; margin-right: auto;">
-            <h1>SwarmTwitter :: {nodeName}
+            <h1>
+              { "SwarmTwitter on " + local.toString }
             </h1>
             <h2>
-              {userId}
-            </h2>{statuses(userAndFollowees(userId))}<hr/>
-            <form action={"/" + userId} method="get">
+              { userId }
+            </h2>{ statuses(userAndFollowees(userId)) }<hr/>
+            <form action={ "/" + userId } method="get">
               Follow a user:
-                <input type="text" size="15" name="followee"/>
-                <input type="submit" value="follow"/>
+              <input type="text" size="15" name="followee"/>
+              <input type="submit" value="follow"/>
             </form>
-            <form action={"/" + userId} method="get">
+            <form action={ "/" + userId } method="get">
               Post a new status:
-                <input type="text" size="15" name="status"/>
-                <input type="submit" value="post"/>
+              <input type="text" size="15" name="status"/>
+              <input type="submit" value="post"/>
             </form>
-            <div>
-              <a href={"http://localhost:8080/" + userId}>view node 1</a>
-            </div>
-            <div>
-              <a href={"http://localhost:8081/" + userId}>view node 2</a>
-            </div>
+            {
+              SwarmTwitter.jettyPorts.map(i =>
+                <div>
+                  <a href={ "http://localhost:" + i + "/" + userId }>{ "http://localhost:" + i + "/" + userId }</a>
+                </div>).toSeq
+            }
             <div>
               <a href="/">go home</a>
             </div>
@@ -162,17 +166,19 @@ class SwarmTwitter(nodeName: String, localPort: Short, remotePort: Short) extend
   def statuses(userIds: List[String]): xml.NodeSeq = {
     val statuses = SwarmBridge.statuses(userIds)
     <h3>Statuses</h3>
-      <div style="margin-bottom: 50px;">
-        {statuses.map(status =>
-        <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
-          <span style="color: #9999ff">
-            {status._1}&gt;
-          </span>{status._2}<span style="float: right; color: #999999; font-size: 75%">
-          {status._3}
-        </span>
-        </div>
-      ).toSeq}
-      </div>
+    <div style="margin-bottom: 50px;">
+      {
+        statuses.map(status =>
+          <div style="margin: 10px; padding: 10px; border-bottom: 1px solid #999;">
+            <span style="color: #9999ff">
+              { status._1 }
+              &gt;
+            </span>{ status._2 }<span style="float: right; color: #999999; font-size: 75%">
+                                  { status._3 }
+                                </span>
+          </div>).toSeq
+      }
+    </div>
   }
 
   protected def contextPath = request.getContextPath

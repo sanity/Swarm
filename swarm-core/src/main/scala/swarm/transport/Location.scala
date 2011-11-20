@@ -9,15 +9,15 @@ trait Location extends Serializable
 /**
  * A simple Location implementation which uses TCP/IP.
  */
-case class InetLocation(address: java.net.InetAddress, port: Short) extends Location {
+case class InetLocation(address: java.net.InetAddress, port: Int) extends Location {
 
   override def equals(other: Any) = {
-    if (!other.isInstanceOf[Any]) false
-    val o = other.asInstanceOf[InetLocation]
-    address == o.address && port == o.port
+    other.isInstanceOf[InetLocation] &&
+      address == other.asInstanceOf[InetLocation].address &&
+      port == other.asInstanceOf[InetLocation].port
   }
 
-  override def hashCode = {
-    address.hashCode + 37 * port.hashCode
-  }
+  override def hashCode = address.hashCode + 37 * port.hashCode
+  
+  override def toString = address.toString + ":" + port
 }
