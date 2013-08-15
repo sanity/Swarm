@@ -3,7 +3,7 @@ package swarm
 import org.apache.log4j._
 
 /**
- * Extending this trait provides some convenience methods for logging to log4j 
+ * Extending this trait provides some convenience methods for logging to log4j
  * without needing to check isEnabledFor(<level>)
  */
 trait Logs {

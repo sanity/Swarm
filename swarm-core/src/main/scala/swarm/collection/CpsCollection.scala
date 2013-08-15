@@ -8,10 +8,10 @@ import swarm.Bee
 
 // TODO these aren't quite working yet due to unserializability
 /**
- * An implicit conversion for any IterableLike structure to be usable in 
- * conjunction with continuations.  For the most part, the implementations 
- * below are pulled right from the Scala core code, thoughertain tweaks have 
- * been made to keep things working with the cps type system. 
+ * An implicit conversion for any IterableLike structure to be usable in
+ * conjunction with continuations.  For the most part, the implementations
+ * below are pulled right from the Scala core code, thoughertain tweaks have
+ * been made to keep things working with the cps type system.
  */
 object CpsCollection {
   // implicit coversion from iterable-like collections to cps-friendly collections

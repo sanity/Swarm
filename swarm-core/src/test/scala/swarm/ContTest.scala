@@ -1,13 +1,13 @@
 package swarm;
 
-import scala.util.continuations._ 
-//import scala.continuations.ControlContext._ 
+import scala.util.continuations._
+//import scala.continuations.ControlContext._
 //import scala.continuations.Loops._
 //import scala.util.continuations.ControlContext.{shift,reset}
 
 object ContTest {
 
-	def get(k : String) = shift { 
+	def get(k : String) = shift {
 		c: (String => Cont) => {
 			if (k == "local") {
 				c("localValue")
@@ -17,7 +17,7 @@ object ContTest {
 			}
 		}
 	}
-	
+
 	def root1() : Cont = reset {
 		println("Attempting first get");
 		println("First get result: "+get("remote"));
@@ -37,7 +37,7 @@ object ContTest {
 		execute(root1())
 		// execute(root2())
 	}
-	
+
 	def execute(cont : Cont) {
 		println("Execute("+cont+")")
 		cont match {
@@ -50,7 +50,7 @@ object ContTest {
 			}
 		}
 	}
-        
+
 }
 
 abstract class Cont
