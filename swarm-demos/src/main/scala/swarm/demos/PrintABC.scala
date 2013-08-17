@@ -1,20 +1,18 @@
 package swarm.demos
 
-import swarm.transport.{Transporter, InetTransporter, InetLocation}
-import swarm.{Bee, NoBee, Swarm}
-import swarm.Swarm.swarm
+import swarm.transport.{InetTransporter, InetLocation}
+import swarm.NoBee
+import swarm.Swarm._
 import swarm.data.Ref
+import java.net.InetAddress
 
-object PrintABC {
-  def main(args: Array[String]) = {
-    implicit val tx: Transporter = InetTransporter
-    InetTransporter.listen(9998);
-    Swarm.spawn(printABC(9997))
-  }
+object PrintABC extends App {
+  implicit val tx = InetTransporter
+  InetTransporter.listen(9998);
 
-  def printABC(remotePort: Short): Bee@swarm = {
-    val local = new InetLocation(java.net.InetAddress.getLocalHost, 9998)
-    val remote = new InetLocation(java.net.InetAddress.getLocalHost, remotePort)
+  spawn {
+    val local = InetLocation(InetAddress.getLocalHost, 9998)
+    val remote = InetLocation(InetAddress.getLocalHost, 9997)
 
     val a = Ref(local, "bumble bee")
     val b = Ref(local, "honey bee")

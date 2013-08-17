@@ -1,8 +1,8 @@
 package swarm.demos
 
-import swarm.transport.{ Location, InetLocation, Transporter, InetTransporter }
+import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
-import java.util.{ UUID, Date }
+import java.util.{UUID, Date}
 import swarm.Swarm
 import swarm.collection.RefMap
 
@@ -14,9 +14,9 @@ object SwarmTwitter extends App {
   for (jettyPort <- jettyPorts) launchNode(jettyPort, (jettyPort + 1000))
 
   def launchNode(jettyPort: Int, localSwarmPort: Int) = {
-    val server = new Server(jettyPort)
+    val server  = new Server(jettyPort)
     val context = new Context(server, "/", Context.SESSIONS)
-    val node = new SwarmTwitter(localSwarmPort)
+    val node    = new SwarmTwitter(localSwarmPort)
     context.addServlet(new ServletHolder(node), "/*")
     server.start();
   }
@@ -66,16 +66,18 @@ object SwarmBridge {
 }
 
 // TODO consider using comet to avoid annoyingly necessary refreshing
-class SwarmTwitter(localPort: Int) extends ScalatraServlet with UrlSupport {
+class SwarmTwitter(localPort: Int) extends ScalatraServlet {
 
   implicit val local: Location = new InetLocation(java.net.InetAddress.getLocalHost, localPort)
   implicit val tx: Transporter = InetTransporter
 
   RefMap.add(local)
-  
-  InetTransporter.listen(localPort)
 
-  type Status = Tuple3[String, String, Date]
+  println("listening")
+  InetTransporter.listen(localPort)
+  println("after listening")
+
+  type Status = (String, String, Date)
 
   get("/") {
     <html>

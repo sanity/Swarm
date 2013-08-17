@@ -1,21 +1,20 @@
 package swarm.demos
 
-import swarm.{Swarm, NoBee}
+import swarm.NoBee
+import swarm.Swarm._
 import swarm.data.Ref
-import swarm.transport.{Transporter, InetTransporter}
+import swarm.transport.{InetTransporter, InetLocation}
+import java.net.InetAddress
 
-object ForceRemoteRef {
-  def main(args: Array[String]) = {
-    implicit val tx: Transporter = InetTransporter
-    InetTransporter.listen(9999)
-    Swarm.spawn(frrThread)
-  }
+object ForceRemoteRef extends App {
+  implicit val tx = InetTransporter
+  InetTransporter.listen(9999)
 
-  def frrThread = {
+  spawn {
     println("1")
     val vLoc = Ref(InetTransporter.local, "test local string")
     println("2")
-    val vRem = Ref(InetTransporter.local, "test remote string")
+    val vRem = Ref(InetLocation(InetAddress.getLocalHost, 9997), "test remote string")
     println("3")
     println(vLoc())
     println("4")
