@@ -2,10 +2,8 @@ package swarm.collection
 
 import swarm.Swarm._
 import swarm.Swarm
-import swarm.transport.{Transporter, Location}
-import java.util.UUID
+import swarm.transport.Location
 import swarm.data.Ref
-import swarm.collection.CpsCollection.cpsIterable
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 
@@ -14,16 +12,16 @@ import scala.collection.JavaConverters._
  */
 class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
 
-  // TODO this should really be a map of [String, Ref], however this causes client-side ClassNotFound exceptions when trying to load the Ref class after Swarm.moveTo() in the put method below
-  private[this] val map = new collection.mutable.HashMap[String, Tuple3[Class[A], Location, Long]]()
+  // NOTE: this should really be a map of [String, Ref], however this causes client-side ClassNotFound exceptions when trying to load the Ref class after Swarm.moveTo() in the put method below
+  // UPDATE: This appears to no longer be an issue, but I'm keeping the above note just in case
+  private[this] val map = new ConcurrentHashMap[String, Ref[A]]() asScala
 
   /**
    * Dereference and return the value (if any) referenced by the given key.
    */
   def get(key: String): Option[A]@swarm = {
     if (map.contains(key)) {
-      val tuple = map(key)
-      val ref = new Ref(tuple._1, tuple._2, tuple._3)
+      val ref = map(key)
       Some(ref())
     } else {
       None
@@ -37,18 +35,17 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
   def put(location: Location, key: String, value: A)(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
     if (map.contains(key)) {
       // The mapStore knows about this id, so assume that all nodes have a reference to this value in their stores
-      val tuple = map(key)
-      val ref = new Ref(tuple._1, tuple._2, tuple._3)
+      val ref = map(key)
       ref.update(value)
     } else {
       // The mapStore does not know about this id, so assume that no nodes have a reference to this value in their stores; create a Ref and add it to every Swarm store
       val ref = Ref(location, value)
-      RefMap.update(refMapKey, key, (ref.typeClass, ref.location, ref.uid))
+      RefMap.update(refMapKey, key, ref)
     }
   }
 
-  protected def put(key: String, tuple: Tuple3[Class[A], Location, Long]) {
-    map(key) = tuple
+  protected def put(key: String, ref: Ref[A]) {
+    map(key) = ref
   }
 }
 
@@ -86,16 +83,11 @@ object RefMap {
   /**
    * For each location, find the RefMap identified by refMapKey and update the value identified by key to a new Ref created from tuple
    */
-  def update[A](refMapKey: String, key: String, tuple: Tuple3[Class[A], Location, Long])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
+  def update[A](refMapKey: String, key: String, ref: Ref[A])(implicit m: scala.reflect.Manifest[A]): Unit@swarm = {
     Swarm.foreach(locations, {
       location: Location =>
         Swarm.moveTo(location)
-        RefMap(tuple._1, refMapKey).put(key, tuple)
+        RefMap(ref.typeClass, refMapKey).put(key, ref)
     })
-    // TODO switch above with below once serializability is resolved
-    //locations.cps.foreach{ location: Location =>
-    //  Swarm.moveTo(location)
-    //  RefMap(tuple._1, refMapKey).put(key, tuple)
-    //}
   }
 }
