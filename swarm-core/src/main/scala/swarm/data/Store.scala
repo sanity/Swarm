@@ -2,19 +2,20 @@ package swarm.data
 
 import swarm.Swarm.swarm
 import swarm.transport.Location
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConverters._
 
 /**
  * The Store is the single point of data storage per Swarm node.
  * A Repository implementation is used to manage the stored data.
  */
-// TODO make this contention safe
 object Store {
 
-  private[this] var repository = SimpleRepository
+  private[this] val repository = SimpleRepository
 
   case class Relocated(uid: Long, location: Location)
 
-  val relocated = new collection.mutable.HashMap[Long, Ref[_]]()
+  val relocated = new ConcurrentHashMap[Long, Ref[_]]() asScala
 
   def apply[A](t: Class[A], uid: Long): Option[A]@swarm = {
     repository.get(uid).asInstanceOf[Option[A]]
