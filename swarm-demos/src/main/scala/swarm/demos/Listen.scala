@@ -1,10 +1,8 @@
 package swarm.demos
 
-import swarm.transport.{Transporter, InetTransporter}
+import swarm.transport.InetTransporter
 
-object Listen {
-  def main(args: Array[String]) = {
-    implicit val tx: Transporter = InetTransporter
-    InetTransporter.listen(9997)
-  }
+object Listen extends App {
+  implicit val tx = InetTransporter
+  InetTransporter.listen(9997)
 }
