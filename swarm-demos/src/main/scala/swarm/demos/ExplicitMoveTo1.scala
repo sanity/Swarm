@@ -1,25 +1,20 @@
 package swarm.demos
 
-import swarm.transport.{Transporter, InetTransporter, InetLocation}
-import swarm.{Bee, NoBee, Swarm}
-import swarm.Swarm.swarm
+import swarm.transport.{InetTransporter, InetLocation}
+import swarm.NoBee
+import swarm.Swarm._
+import java.net.InetAddress
 
-object ExplicitMoveTo1 {
-  def main(args: Array[String]) = {
+object ExplicitMoveTo1 extends App {
+  implicit val tx = InetTransporter
+  InetTransporter.listen(9998)
 
-    implicit val tx: Transporter = InetTransporter
-
-    InetTransporter.listen(9998)
-
-    Swarm.spawn(emt1Thread)
-  }
-
-  def emt1Thread: Bee@swarm = {
-    val name = scala.Console.readLine("What is your name? : ");
-    Swarm.moveTo(new InetLocation(java.net.InetAddress.getLocalHost, 9997))
-    val age = Integer.parseInt(readLine("Hello " + name + ", what age are you? : "))
-    Swarm.moveTo(new InetLocation(java.net.InetAddress.getLocalHost, 9998))
-    println("Wow " + name + ", you're half way to " + (age * 2) + " years old")
+  spawn {
+    val name = readLine("What is your name? ")
+    moveTo(InetLocation(InetAddress.getLocalHost, 9997))
+    val age = Integer.parseInt(readLine(s"Hello $name, what age are you? "))
+    moveTo(InetLocation(InetAddress.getLocalHost, 9998))
+    println(s"Wow $name you're half way to ${age * 2} years old!")
     NoBee()
   }
 }
