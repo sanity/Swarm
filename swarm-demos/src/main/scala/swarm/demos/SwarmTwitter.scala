@@ -180,6 +180,4 @@ class SwarmTwitter(localPort: Int) extends ScalatraServlet with UrlSupport {
       }
     </div>
   }
-
-  protected def contextPath = request.getContextPath
 }
