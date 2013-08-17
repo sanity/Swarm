@@ -7,9 +7,12 @@ Swarm is a framework allowing the creation of applications which can scale trans
 
 In effect, Swarm will be the ultimate "Platform as a Service", going much further than systems like Google App Engine in relieving the programmer from the difficulties of cloud computing.
 
-You may find the Swarm source code here, however for the project's homepage and lots more information, please visit GoogleCode_.
+Community
+=========
 
-.. _GoogleCode: http://code.google.com/p/swarm-dpl
+IRC: irc.freenode.net #swarmproject
+[Mailing List](http://groups.google.com/group/swarm-discuss)
+
 
 Quick Start Guide
 =================
@@ -18,7 +21,7 @@ Quick Start Guide
 
 These instructions assume you are using a Linux or Mac-like system. If you are using Windows, we recommending using Cygwin which should allow you to follow these instructions more-or-less verbatim.
 
-Install Scala 2.9.1
+Install Scala 2.9.2
 -------------------
 
 http://www.scala-lang.org/downloads
@@ -27,7 +30,7 @@ http://www.scala-lang.org/downloads
 Download Swarm
 --------------
 
-git clone git@github.com:sanity/Swarm.git
+`git clone git@github.com:sanity/Swarm.git`
 
 
 Run the demo
