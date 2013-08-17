@@ -6,6 +6,8 @@ import swarm.transport.{Transporter, Location}
 import java.util.UUID
 import swarm.data.Ref
 import swarm.collection.CpsCollection.cpsIterable
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConverters._
 
 /**
  * RefMap represents a map of Ref instances.
@@ -55,7 +57,7 @@ class RefMap[A](typeClass: Class[A], refMapKey: String) extends Serializable {
  */
 object RefMap {
 
-  private[this] val map = new collection.mutable.HashMap[String, RefMap[_]]()
+  private[this] val map = new ConcurrentHashMap[String, RefMap[_]]() asScala
 
   private[this] var _locations: List[Location] = Nil // TODO expunge this var
 
@@ -63,7 +65,9 @@ object RefMap {
    * Crudely specify the locations in the Swarm cluster.
    */
   def add(location: Location) {
-    _locations = location :: locations
+    _locations.synchronized {
+      _locations = location :: _locations
+    }
   }
 
   def locations = _locations
