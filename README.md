@@ -8,7 +8,8 @@ In effect, Swarm will be the ultimate "Platform as a Service", going much furthe
 
 ## Community
 
-IRC: irc.freenode.net #swarmproject
+IRC: `irc.freenode.net #swarmproject`
+
 [Mailing List](http://groups.google.com/group/swarm-discuss)
 
 
@@ -20,13 +21,11 @@ These instructions assume you are using a Linux or Mac-like system. If you are u
 
 ### Install Scala 2.9.2
 
-http://www.scala-lang.org/downloads
-
+[Installation Instructions](http://www.scala-lang.org/downloads)
 
 ### Download Swarm
 
 `git clone git@github.com:sanity/Swarm.git`
-
 
 ### Run the demo
 
