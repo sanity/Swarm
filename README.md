@@ -19,7 +19,7 @@ IRC: `irc.freenode.net #swarmproject`
 
 These instructions assume you are using a Linux or Mac-like system. If you are using Windows, we recommending using Cygwin which should allow you to follow these instructions more-or-less verbatim.
 
-### Install Scala 2.9.2
+### Install Scala 2.10.x
 
 [Installation Instructions](http://www.scala-lang.org/downloads)
 
