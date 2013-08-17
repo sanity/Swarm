@@ -3,7 +3,7 @@ package swarm
 import data.{Store, Ref}
 import transport._
 import util.continuations._
-import java.util.concurrent.Executors
+import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, LinkedBlockingQueue}
 import java.util.UUID
 
 /**
@@ -15,8 +15,25 @@ object Swarm {
 
   type swarm = cpsParam[Bee, Bee]
 
-  // TODO this is pretty hacktastic
-  val executor = Executors.newFixedThreadPool(10)
+  /**
+   * Mix behavior of fixedThreadPool and cachedThreadPool
+   * to achieve maximum performance. Creates threads as needed
+   * up until the maximum of 20 threads per core, kills idle threads
+   * after 60 seconds of inactivity, reuses threads if available, and
+   * will not reject thread creation if max limit is reached (those
+   * tasks will be queued until a thread is available)
+   */
+  private val processorCount = Runtime.getRuntime.availableProcessors
+  val executor = new ThreadPoolExecutor(
+    // Min # of threads
+    processorCount,
+    // Max of 20 threads per core
+    processorCount * 20,
+    // Kill extra (more than processorCount) threads after 60 seconds of inactivity
+    60L, TimeUnit.SECONDS,
+    // Queue type
+    new LinkedBlockingQueue[Runnable]()
+  )
 
   /**
    * Called from concrete implementations to run the continuation
