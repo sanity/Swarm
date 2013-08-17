@@ -3,8 +3,9 @@ package swarm
 import data.{Store, Ref}
 import transport._
 import util.continuations._
-import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, LinkedBlockingQueue}
+import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, LinkedBlockingQueue, ConcurrentHashMap}
 import java.util.UUID
+import scala.collection.JavaConverters._
 
 /**
  * Swarm owns all of the continuations code. It relies on an implicit
@@ -130,7 +131,7 @@ object Swarm {
     }
   }
 
-  private[this] val futures = new scala.collection.mutable.HashMap[String, Future]()
+  private[this] val futures = new ConcurrentHashMap[String, Future]() asScala
 
   def saveFutureResult(uuid: String, value: Any) = getFuture(uuid).value = value
 
