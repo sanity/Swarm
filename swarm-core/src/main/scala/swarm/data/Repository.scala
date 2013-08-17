@@ -1,5 +1,8 @@
 package swarm.data
 
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConverters._
+
 /**
  * A Repository instance is used by the Store to store and retrieve data.
  * Potentially different implementations can be used to connect to different types of storage mechanisms.
@@ -17,10 +20,9 @@ trait Repository {
 /**
  * A simple implementation of a Repository.
  */
-// TODO make this contention safe
 object SimpleRepository extends Repository {
   private[this] var nextUid: Long = 0L
-  private[this] val store = new collection.mutable.HashMap[Long, Any]()
+  private[this] val store = new ConcurrentHashMap[Long, Any]() asScala
 
   def get[A](uid: Long): Option[A] = store.get(uid).asInstanceOf[Option[A]]
 
