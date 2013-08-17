@@ -27,9 +27,11 @@ object SimpleRepository extends Repository {
   def get[A](uid: Long): Option[A] = store.get(uid).asInstanceOf[Option[A]]
 
   def add[A](value: A): Long = {
-    nextUid += 1
-    store(nextUid) = value
-    nextUid
+    synchronized {
+      nextUid += 1
+      store(nextUid) = value
+      nextUid
+    }
   }
 
   def update[A](uid: Long, newValue: A) = store.put(uid, newValue)
