@@ -4,22 +4,34 @@ import Keys._
 
 object SwarmBuild extends Build {
 
+  // Build settings
+  val scalaVer = "2.10.1"
+  val customResolvers = Seq(
+    "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
+    "Akka Repo" at "http://repo.akka.io/repository"
+  )
+
+  // Swarm Dependencies
   val log4j           = "log4j"             %  "log4j"           % "1.2.16"
-  val scalatra        = "org.scalatra"      %% "scalatra"        % "2.0.1"
-  val auth            = "org.scalatra"      %% "scalatra-auth"   % "2.0.1"
+  val scalatest       = "org.scalatest"     %% "scalatest"       % "1.9.1"  % "test"
+  // Demo Dependencies
+  val scalatra        = "org.scalatra"      %% "scalatra"        % "2.2.1"
   val jetty6          = "org.mortbay.jetty" %  "jetty"           % "6.1.22"
   val servletApi      = "javax.servlet"     %  "servlet-api"     % "2.5"
-  val scalatest       = "org.scalatest"     %  "scalatest_2.9.0" % "1.4.1"  % "test"
+  val logback         = "ch.qos.logback"    % "logback-classic"  % "1.0.11" % "runtime"
 
-  val cps = Seq(autoCompilerPlugins := true,
-              addCompilerPlugin("org.scala-lang.plugins" % "continuations" % "2.9.1"),
-              scalacOptions += "-P:continuations:enable")
-
+  // Delimited Continuations Plugin
+  val cps = Seq(
+    autoCompilerPlugins := true,
+    addCompilerPlugin("org.scala-lang.plugins" % "continuations" % "2.10.1"),
+    scalacOptions += "-P:continuations:enable"
+  )
 
   lazy val core  = Project(
     id = "core",
     base = file("swarm-core"),
     settings = default ++ cps ++ Seq(
+      scalaVersion := scalaVer,
       libraryDependencies ++= Seq(scalatest, log4j)
     )
   )
@@ -29,7 +41,9 @@ object SwarmBuild extends Build {
     base = file("swarm-demos"),
     dependencies = Seq(core),
     settings = default ++ cps ++ Seq(
-      libraryDependencies ++= Seq(scalatest, log4j, scalatra, auth, jetty6, servletApi)
+      scalaVersion := scalaVer,
+      resolvers ++= customResolvers,
+      libraryDependencies ++= Seq(scalatest, log4j, scalatra, jetty6, servletApi, logback)
     )
   )
 }
