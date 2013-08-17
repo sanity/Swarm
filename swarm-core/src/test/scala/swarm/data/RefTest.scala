@@ -1,8 +1,10 @@
 package swarm.data
 
 import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers._
 import swarm.transport.{Location, Transporter}
 import swarm._
+import swarm.Swarm._
 import collection.RefMap
 
 class RefTest extends FunSuite {
@@ -11,21 +13,24 @@ class RefTest extends FunSuite {
     implicit val tx: Transporter = InMemTest.tx1
     implicit val local: Location = InMemLocation(1)
 
-    Swarm.spawn {
+    spawn {
       RefMap.add(InMemLocation(1))
       RefMap.add(InMemLocation(2))
 
       val stringsMap = RefMap(classOf[String], "strings")
 
-      stringsMap.put(InMemLocation(1), "one", "1")
+      stringsMap.put(InMemLocation(1), "refmap-test-one", "1")
       Thread.sleep(100)
 
-      stringsMap.put(InMemLocation(2), "two", "2")
+      stringsMap.put(InMemLocation(2), "refmap-test-two", "2")
       Thread.sleep(100)
 
-      assert(Some("1") === stringsMap.get("one"))
-      assert(Some("2") === stringsMap.get("two"))
-      assert(Some("1") === RefMap(classOf[String], "strings").get("one"))
+      val oneResult = stringsMap.get("refmap-test-one")
+      val twoResult = stringsMap.get("refmap-test-two")
+      val refMapResult = RefMap(classOf[String], "strings").get("refmap-test-one")
+      oneResult should equal(Some("1"))
+      twoResult should equal(Some("2"))
+      refMapResult should equal(Some("1"))
     }
   }
 }

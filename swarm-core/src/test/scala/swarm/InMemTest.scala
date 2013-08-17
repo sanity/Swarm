@@ -1,10 +1,11 @@
 package swarm
 
 import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers._
 import util.continuations._
-import swarm.Swarm.swarm
 import swarm.data.Ref
 import swarm.transport.{Location, Transporter}
+import swarm.Swarm._
 
 class InMemTest extends FunSuite {
 
@@ -22,9 +23,10 @@ class InMemTest extends FunSuite {
     execute {
       Unit =>
 
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        Some(InMemLocation(1)) should equal(InMemTest.currentLocation)
+
         at(InMemLocation(2)) run {
-          assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+          Some(InMemLocation(2)) should equal(InMemTest.currentLocation)
         }
 
         NoBee()
@@ -42,14 +44,14 @@ class InMemTest extends FunSuite {
     execute {
       Unit =>
 
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        Some(InMemLocation(1)) should equal(InMemTest.currentLocation)
         val uuid = remember {
-          Swarm.moveTo(InMemLocation(2))
+          moveTo(InMemLocation(2))
           1
         }
 
-        Swarm.moveTo(local)
-        assert(1 === Swarm.getFutureResult(uuid))
+        moveTo(local)
+        getFutureResult(uuid) should equal(1)
 
         NoBee()
     }
@@ -64,18 +66,20 @@ class InMemTest extends FunSuite {
     execute {
       Unit =>
 
-      // start with a clean slate
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        // start with a clean slate
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         // create a Ref
         val ref = Ref(InMemLocation(1), "test string one")
-        assert(ref() === "test string one")
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        val refResult = ref()
+        refResult should equal("test string one")
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         // relocate the Ref
-        val newRef = Swarm.relocate(ref, InMemLocation(2))
-        assert(newRef() === "test string one")
-        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+        val newRef = relocate(ref, InMemLocation(2))
+        val newRefResult = newRef()
+        newRefResult should equal("test string one")
+        InMemTest.currentLocation should equal(Some(InMemLocation(2)))
 
         NoBee()
     }
@@ -87,16 +91,16 @@ class InMemTest extends FunSuite {
     execute {
       Unit =>
 
-      // start with a clean slate
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        // start with a clean slate
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         // move to a location
-        Swarm.moveTo(InMemLocation(2))
-        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+        moveTo(InMemLocation(2))
+        InMemTest.currentLocation should equal(Some(InMemLocation(2)))
 
         // move to another location
-        Swarm.moveTo(InMemLocation(1))
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        moveTo(InMemLocation(1))
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         NoBee()
     }
@@ -109,23 +113,25 @@ class InMemTest extends FunSuite {
       Unit =>
 
       // start with a clean slate
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         // create a Ref
         val ref1 = Ref(InMemLocation(1), "test string one")
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         // create another Ref
         val ref2 = Ref(InMemLocation(2), "test string two")
-        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+        InMemTest.currentLocation should equal(Some(InMemLocation(2)))
 
         // ensure the Ref takes us to the appropriate location
-        assert(ref1() === "test string one")
-        assert(InMemTest.currentLocation === Some(InMemLocation(1)))
+        val ref1result = ref1()
+        ref1result should equal("test string one")
+        InMemTest.currentLocation should equal(Some(InMemLocation(1)))
 
         // ensure the other Ref takes us to the appropriate location
-        assert(ref2() === "test string two")
-        assert(InMemTest.currentLocation === Some(InMemLocation(2)))
+        val ref2result = ref2()
+        ref2result should equal("test string two")
+        InMemTest.currentLocation should equal(Some(InMemLocation(2)))
 
         NoBee()
     }
