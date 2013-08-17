@@ -57,7 +57,7 @@ object Ref {
   def apply[A](location: Location, value: A)(implicit m: scala.reflect.Manifest[A]): Ref[A]@swarm = {
     Swarm.moveTo(location)
     val uid = Store.save(value)
-    new Ref[A](m.erasure.asInstanceOf[Class[A]], location, uid);
+    new Ref[A](m.runtimeClass.asInstanceOf[Class[A]], location, uid)
   }
 
   def unapply[A](ref: Ref[A]) = {
