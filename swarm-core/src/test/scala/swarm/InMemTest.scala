@@ -57,7 +57,6 @@ class InMemTest extends FunSuite {
     }
   }
 
-  // TODO this fails sometimes, then passes again without any changes
   test("explicit relocate() transports data") {
     implicit val local: Location = InMemLocation(1)
 
