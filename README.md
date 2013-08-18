@@ -31,11 +31,11 @@ These instructions assume you are using a Linux or Mac-like system. If you are u
 
 From the Swarm directory, in one console window:
 
-`$ sbt/sbt "demos/run-main swarm.demos.Listen"`
+`$ sbt/sbt "demos/run-main org.swarmframework.demos.Listen"`
 
 Then, in another console window:
 
-`$ sbt/sbt "demos/run-main swarm.demos.ExplicitMoveTo1"`
+`$ sbt/sbt "demos/run-main org.swarmframework.demos.ExplicitMoveTo1"`
 
 In this demo keep an eye on both consoles, you will be asked for input in one console, then the other.
 
@@ -43,6 +43,6 @@ In this demo keep an eye on both consoles, you will be asked for input in one co
 
 From the command line, launch the Twitter demo:
 
-`$ sbt/sbt "demos/run-main swarm.demos.SwarmTwitter"`
+`$ sbt/sbt "demos/run-main org.swarmframework.demos.SwarmTwitter"`
 
 In a Web browser, navigate to `http://localhost:8080/` and `http://localhost:8081/` to interact with each node.
