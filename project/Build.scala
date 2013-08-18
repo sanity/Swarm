@@ -15,7 +15,6 @@ object SwarmBuild extends Build {
   organization := "org.swarmframework"
 
   // Swarm Dependencies
-  val log4j           = "log4j"             %  "log4j"           % "1.2.16"
   val scalatest       = "org.scalatest"     %% "scalatest"       % "1.9.1"  % "test"
   // Demo Dependencies
   val scalatra        = "org.scalatra"      %% "scalatra"        % "2.2.1"
@@ -35,7 +34,7 @@ object SwarmBuild extends Build {
     base = file("swarm-core"),
     settings = default ++ cps ++ Seq(
       scalaVersion := scalaVer,
-      libraryDependencies ++= Seq(scalatest, log4j)
+      libraryDependencies ++= Seq(scalatest, logback)
     )
   )
 
@@ -46,7 +45,7 @@ object SwarmBuild extends Build {
     settings = default ++ cps ++ Seq(
       scalaVersion := scalaVer,
       resolvers ++= customResolvers,
-      libraryDependencies ++= Seq(scalatest, log4j, scalatra, jetty6, servletApi, logback)
+      libraryDependencies ++= Seq(scalatest, scalatra, jetty6, servletApi, logback)
     )
   )
 }
