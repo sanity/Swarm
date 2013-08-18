@@ -1,9 +1,9 @@
-package swarm.demos
+package org.swarmframework.demos
 
-import swarm.NoBee
-import swarm.Swarm._
-import swarm.data.Ref
-import swarm.transport.{InetTransporter, InetLocation}
+import org.swarmframework.internal._
+import org.swarmframework.core.Swarm._
+import org.swarmframework.data.Ref
+import org.swarmframework.transport._
 import java.net.InetAddress
 
 object ForceRemoteRef extends App {
