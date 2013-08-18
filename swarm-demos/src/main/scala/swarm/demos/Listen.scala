@@ -1,6 +1,6 @@
-package swarm.demos
+package org.swarmframework.demos
 
-import swarm.transport.InetTransporter
+import org.swarmframework.transport.InetTransporter
 
 object Listen extends App {
   implicit val tx = InetTransporter

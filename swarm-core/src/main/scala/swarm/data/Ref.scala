@@ -1,8 +1,8 @@
-package swarm.data
+package org.swarmframework.data
 
-import swarm.Swarm._
-import swarm.Logs
-import swarm.transport.Location
+import org.swarmframework.core.Swarm._
+import org.swarmframework.internal._
+import org.swarmframework.transport.Location
 
 /**
  * Ref represents a reference to an object which may reside on a remote computer.

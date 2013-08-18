@@ -10,6 +10,9 @@ object SwarmBuild extends Build {
     "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
     "Akka Repo" at "http://repo.akka.io/repository"
   )
+  version := "0.1-SNAPSHOT"
+  name := "swarm"
+  organization := "org.swarmframework"
 
   // Swarm Dependencies
   val log4j           = "log4j"             %  "log4j"           % "1.2.16"
@@ -18,7 +21,7 @@ object SwarmBuild extends Build {
   val scalatra        = "org.scalatra"      %% "scalatra"        % "2.2.1"
   val jetty6          = "org.mortbay.jetty" %  "jetty"           % "6.1.22"
   val servletApi      = "javax.servlet"     %  "servlet-api"     % "2.5"
-  val logback         = "ch.qos.logback"    % "logback-classic"  % "1.0.11" % "runtime"
+  val logback         = "ch.qos.logback"    % "logback-classic"  % "1.0.11"
 
   // Delimited Continuations Plugin
   val cps = Seq(

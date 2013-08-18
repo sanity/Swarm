@@ -1,10 +1,12 @@
-package swarm
+package org.swarmframework.tests
 
-import data.Ref
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers._
+
 import java.util.UUID
-import swarm.Swarm._
+
+import org.swarmframework.core.Swarm._
+import org.swarmframework.data.Ref
 
 class FutureTest extends FunSuite {
 

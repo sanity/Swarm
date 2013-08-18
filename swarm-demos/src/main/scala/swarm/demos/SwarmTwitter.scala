@@ -1,10 +1,11 @@
-package swarm.demos
+package org.swarmframework.demos
 
-import swarm.transport.{Location, InetLocation, Transporter, InetTransporter}
 import org.scalatra._
 import java.util.{UUID, Date}
-import swarm.Swarm
-import swarm.collection.RefMap
+
+import org.swarmframework.transport._
+import org.swarmframework.core.Swarm
+import org.swarmframework.collection.RefMap
 
 object SwarmTwitter extends App {
   import org.mortbay.jetty._

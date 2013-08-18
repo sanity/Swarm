@@ -1,7 +1,7 @@
-package swarm.data
+package org.swarmframework.data
 
-import swarm.Swarm.swarm
-import swarm.transport.Location
+import org.swarmframework.core.Swarm.swarm
+import org.swarmframework.transport.Location
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 

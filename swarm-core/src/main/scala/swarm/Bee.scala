@@ -1,4 +1,7 @@
-package swarm
+package org.swarmframework.internal
+
+import org.swarmframework.transport._
+import org.swarmframework.data._
 
 /**
  * The Bee trait sits at the boundaries of the cps type declarations in Swarm,
@@ -11,6 +14,6 @@ sealed trait Bee extends Serializable
 
 case class NoBee() extends Bee
 
-case class IsBee(contFunc: (Unit => Bee), location: swarm.transport.Location) extends Bee
+case class IsBee(contFunc: (Unit => Bee), location: Location) extends Bee
 
-case class RefBee(contFunc: (Unit => Bee), ref: swarm.data.Ref[_]) extends Bee
+case class RefBee(contFunc: (Unit => Bee), ref: Ref[_]) extends Bee

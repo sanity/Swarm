@@ -1,4 +1,4 @@
-package swarm.transport
+package org.swarmframework.transport
 
 /**
  * A Location tells Swarm where to find referenced data.

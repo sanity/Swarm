@@ -1,4 +1,4 @@
-package swarm
+package org.swarmframework.internal
 
 import org.apache.log4j._
 

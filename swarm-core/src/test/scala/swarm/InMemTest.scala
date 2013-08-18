@@ -1,11 +1,15 @@
-package swarm
+package org.swarmframework.tests
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers._
+
 import util.continuations._
-import swarm.data.Ref
-import swarm.transport.{Location, Transporter}
-import swarm.Swarm._
+
+import org.swarmframework.data.Ref
+import org.swarmframework.transport._
+import org.swarmframework.core.Swarm
+import org.swarmframework.core.Swarm._
+import org.swarmframework.internal._
 
 class InMemTest extends FunSuite {
 
@@ -14,7 +18,6 @@ class InMemTest extends FunSuite {
   }
 
   test("dsl should change location and run execution") {
-    import swarm.Swarm.at
 
     implicit val local: Location = InMemLocation(1)
 
@@ -34,7 +37,6 @@ class InMemTest extends FunSuite {
   }
 
   test("dsl should save future value") {
-    import swarm.Swarm.remember
 
     implicit val local: Location = InMemLocation(1)
     implicit val tx: Transporter = new InMemTransporter(InMemLocation(1))

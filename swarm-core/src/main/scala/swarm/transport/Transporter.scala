@@ -1,6 +1,7 @@
-package swarm.transport
+package org.swarmframework.transport
 
-import swarm.{Logs, Bee}
+import org.swarmframework.core.Swarm._
+import org.swarmframework.internal.{Logs, Bee}
 
 /**
  * A Transporter moves computation to a remote Swarm node.
@@ -17,7 +18,6 @@ trait Transporter {
 object InetTransporter extends Transporter with Logs {
 
   import java.net.InetAddress
-  import swarm.Swarm
 
   private[this] val localHost: InetAddress = InetAddress.getLocalHost
   private[this] var _local: Option[InetLocation] = None
@@ -42,17 +42,17 @@ object InetTransporter extends Transporter with Logs {
 
     val server = new java.net.ServerSocket(port);
 
-    var runnable = new Runnable() {
+    val runnable = new Runnable() {
       override def run() = {
         while (true) {
           val socket = server.accept()
           val ois = new java.io.ObjectInputStream(socket.getInputStream())
           val bee = ois.readObject().asInstanceOf[(Unit => Bee)]
           debug("resuming execution from " + local)
-          Swarm.continue(bee)
+          continue(bee)
         }
       }
     }
-    Swarm.executor.execute(runnable)
+    executor.execute(runnable)
   }
 }

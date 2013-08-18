@@ -1,7 +1,5 @@
-package swarm
+package org.swarmframework.core
 
-import data.{Store, Ref}
-import transport._
 import util.continuations._
 import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, LinkedBlockingQueue, ConcurrentHashMap}
 import java.util.UUID
@@ -13,6 +11,9 @@ import scala.collection.JavaConverters._
  * between nodes.
  */
 object Swarm {
+  import org.swarmframework.data.{Store, Ref}
+  import org.swarmframework.transport._
+  import org.swarmframework.internal._
 
   type swarm = cpsParam[Bee, Bee]
 

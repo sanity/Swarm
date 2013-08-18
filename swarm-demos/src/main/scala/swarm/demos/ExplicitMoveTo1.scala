@@ -1,8 +1,9 @@
-package swarm.demos
+package org.swarmframework.demos
 
-import swarm.transport.{InetTransporter, InetLocation}
-import swarm.NoBee
-import swarm.Swarm._
+import org.swarmframework.transport._
+import org.swarmframework.internal._
+import org.swarmframework.core.Swarm._
+
 import java.net.InetAddress
 
 object ExplicitMoveTo1 extends App {

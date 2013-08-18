@@ -1,10 +1,10 @@
-package swarm.collection
+package org.swarmframework.collection
 
 import scala.collection.IterableLike
 import scala.collection.GenTraversableOnce
 import scala.collection.generic.CanBuildFrom
 import scala.util.continuations._
-import swarm.Bee
+import org.swarmframework.internal._
 
 // TODO these aren't quite working yet due to unserializability
 /**

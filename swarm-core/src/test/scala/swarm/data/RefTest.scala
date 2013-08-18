@@ -1,11 +1,11 @@
-package swarm.data
+package org.swarmframework.tests
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers._
-import swarm.transport.{Location, Transporter}
-import swarm._
-import swarm.Swarm._
-import collection.RefMap
+
+import org.swarmframework.transport._
+import org.swarmframework.core.Swarm._
+import org.swarmframework.collection.RefMap
 
 class RefTest extends FunSuite {
 

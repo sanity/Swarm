@@ -1,9 +1,9 @@
-package swarm.demos
+package org.swarmframework.demos
 
-import swarm.transport.{InetTransporter, InetLocation}
-import swarm.NoBee
-import swarm.Swarm._
-import swarm.data.Ref
+import org.swarmframework.transport._
+import org.swarmframework.internal.NoBee
+import org.swarmframework.core.Swarm._
+import org.swarmframework.data.Ref
 import java.net.InetAddress
 
 object PrintABC extends App {
