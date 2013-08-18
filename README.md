@@ -37,7 +37,17 @@ Then, in another console window:
 
 `$ sbt/sbt "demos/run-main org.swarmframework.demos.ExplicitMoveTo1"`
 
-In this demo keep an eye on both consoles, you will be asked for input in one console, then the other.
+In this demo keep an eye on both consoles, you will be asked for input in one console, then the other.  The
+surprising thing is that the [code](https://github.com/sanity/Swarm/blob/master/swarm-demos/src/main/scala/swarm/demos/ExplicitMoveTo1.scala)
+jumps between consoles with a single command!
+
+```
+    val name = readLine("What is your name? ")
+    moveTo(InetLocation(InetAddress.getLocalHost, 9997))
+    val age = Integer.parseInt(readLine(s"Hello $name, what age are you? "))
+    moveTo(InetLocation(InetAddress.getLocalHost, 9998))
+    println(s"Wow $name you're half way to ${age * 2} years old!")
+```
 
 ### Run the Twitter simulator
 
