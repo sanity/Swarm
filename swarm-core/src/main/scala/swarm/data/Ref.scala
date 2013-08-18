@@ -1,8 +1,7 @@
 package swarm.data
 
-import swarm.Swarm.swarm
-import scala.Predef._
-import swarm.{Logs, Swarm}
+import swarm.Swarm._
+import swarm.Logs
 import swarm.transport.Location
 
 /**
@@ -32,16 +31,16 @@ class Ref[A](val typeClass: Class[A], initLoc: Location, initUid: Long) extends 
    * Dereference and return the data referenced by this Ref.
    */
   def apply(): A@swarm = {
-    debug("dereferencing Ref " + uid + "@" + location)
-    Swarm.dereference(this)
-    Store(typeClass, uid).getOrElse(throw new RuntimeException("Unable to find item with uid " + uid + " in local store"))
+    debug(s"dereferencing Ref $uid @ $location")
+    dereference(this)
+    Store(typeClass, uid).getOrElse(throw new RuntimeException(s"Unable to find item with uid $uid in local store"))
   }
 
   /**
    * Update the data value referenced by this Ref.
    */
   def update(newValue: A): Unit@swarm = {
-    Swarm.dereference(this)
+    dereference(this)
     Store.update(uid, newValue)
   }
 }
@@ -55,7 +54,7 @@ object Ref {
    * Store the given value in the local Store, then generate a new Ref instance with the given location and value.
    */
   def apply[A](location: Location, value: A)(implicit m: scala.reflect.Manifest[A]): Ref[A]@swarm = {
-    Swarm.moveTo(location)
+    moveTo(location)
     val uid = Store.save(value)
     new Ref[A](m.runtimeClass.asInstanceOf[Class[A]], location, uid)
   }
