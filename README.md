@@ -41,7 +41,7 @@ In this demo keep an eye on both consoles, you will be asked for input in one co
 surprising thing is that the [code](https://github.com/sanity/Swarm/blob/master/swarm-demos/src/main/scala/swarm/demos/ExplicitMoveTo1.scala)
 jumps between consoles with a single command!
 
-```
+```scala
     val name = readLine("What is your name? ")
     moveTo(InetLocation(InetAddress.getLocalHost, 9997))
     val age = Integer.parseInt(readLine(s"Hello $name, what age are you? "))
