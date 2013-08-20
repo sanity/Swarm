@@ -56,3 +56,8 @@ From the command line, launch the Twitter demo:
 `$ sbt/sbt "demos/run-main org.swarmframework.demos.SwarmTwitter"`
 
 In a Web browser, navigate to `http://localhost:8080/` and `http://localhost:8081/` to interact with each node.
+
+### Developing Swarm with IntelliJ IDEA
+
+Install the Scala and SBT nightly plugins for IDEA, and Import Project, select the SBT 
+project type, check Auto-Update.
