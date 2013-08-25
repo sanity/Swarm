@@ -59,5 +59,13 @@ In a Web browser, navigate to `http://localhost:8080/` and `http://localhost:808
 
 ### Developing Swarm with IntelliJ IDEA
 
-Install the Scala and SBT nightly plugins for IDEA, and Import Project, select the SBT 
-project type, check Auto-Update.
+If you haven't already, install the 
+[Scala](http://confluence.jetbrains.com/display/SCA/Scala+Plugin+Nightly+Builds+for+Leda) and 
+[SBT](http://confluence.jetbrains.com/display/SCA/SBT+Plugin+Nightly+Builds+for+Leda) plugins (we recommend 
+the nightly versions, see the green box on the linked pages for auto-update).
+
+Generate an IDEA project file:
+
+`$ sbt/sbt gen-idea`
+
+Now open the project in IDEA.  
