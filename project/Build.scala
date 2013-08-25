@@ -48,5 +48,15 @@ object SwarmBuild extends Build {
       libraryDependencies ++= Seq(scalatest, scalatra, jetty6, servletApi, logback)
     )
   )
-}
 
+  lazy val experiments = Project(
+    id = "experiments",
+    base = file("swarm-experiments"),
+    dependencies = Seq(core),
+    settings = default ++ cps ++ Seq(
+      scalaVersion := scalaVer,
+      resolvers ++= customResolvers,
+      libraryDependencies ++= Seq(scalatest, scalatra, jetty6, servletApi, logback)
+    )
+  )
+}
