@@ -57,14 +57,47 @@ object Configuration {
  * A computer that contains datums
  */
 trait Computer {
-  def datums: Set[Datum]
+}
+
+/**
+ * This class is responsible for keeping track of dereferences, which it does
+ * by storing the edges and notifying the appropriate edge when a dereference
+ * occurs.  It can support multiple edge types, and must be passed a factory
+ * for the appropriate edge type on construction.
+ *
+ * @param edgeFactory
+ * @tparam E
+ */
+class DereferenceTracker[E <: Edge](edgeFactory : {def newEdge() : E}) {
+  val edges = mutable.Map[(Datum, Datum), E]()
+  val edgesByFrom = mutable.Map[Datum, Set[E]]()
+  val edgesByTo = mutable.Map[Datum, Set[E]]()
+
+  def recordDereference(from : Datum, to : Datum) {
+    val edge = edges.get((from, to)) match {
+      case Some(edge) => edge
+      case None => {
+        val newEdge = edgeFactory.newEdge()
+        edges.put((from, to), newEdge)
+        edgesByFrom.getOrElseUpdate(from, mutable.Set()) += newEdge
+        edgesByTo.getOrElseUpdate(to, mutable.Set()) += newEdge
+        newEdge
+      }
+    }
+    edge.notifyOfDeref()
+  }
 }
 
 /**
  * A connection between two Datums, which contains information about
  * how frequently they are accessed one immediately after the other
  */
-trait Edge {
+trait Edge[DerefInfo] {
+  val from : Datum
+  val to : Datum
+
+  def notifyOfDeref()
+
   def derefsPerSecond: Double
 }
 
@@ -72,11 +105,4 @@ trait Edge {
  * A piece of data
  */
 trait Datum {
-  def edgesByDatum: Map[Datum, Edge]
-
-  def remoteDPS: Number = {
-    (for ((d, e) <- edgesByDatum if d.computer != this.computer) yield e.derefsPerSecond).sum
-  }
-
-  def computer: Computer
 }
