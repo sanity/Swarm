@@ -6,6 +6,14 @@ package swarm.experiments.clustering
 
 import scala.collection._
 
+class RRPSScore(configuration : Configuration, dereferenceTracker : DereferenceTracker) {
+  def getScore() : Double = {
+    throw new RuntimeException()
+  }
+
+  def updateCon
+}
+
 /**
  * An immutable class that represents an arrangement of Datums between computers.
  */

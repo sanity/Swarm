@@ -1,0 +1,5 @@
+language: java
+notifications:
+  email:
+    - ian.clarke@gmail.com
+    - ravitejasvi@gmail.com
