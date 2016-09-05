@@ -1,0 +1,17 @@
+.cache
+bin/
+target/
+*.class
+*.ipr
+*.iml
+*.iws
+.idea/
+src_managed/
+project/boot/
+project/plugins/project/
+lib_managed/
+.classpath
+.settings
+.project
+.scala_dependencies
+*.swp
