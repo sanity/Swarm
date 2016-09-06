@@ -100,7 +100,7 @@ class ParallelCoroutineSystemTest {
             latch.await()
         }
 
-        expect that executionTime isCloseTo individualTaskDuration withinPercentage 20
+        expect that executionTime isCloseTo 1 * individualTaskDuration withinPercentage 20
         expect that threads containsOnlyOnce listOf(threads.peek())
     }
 
@@ -135,7 +135,7 @@ class ParallelCoroutineSystemTest {
             latch.await()
         }
 
-        expect that executionTime isCloseTo individualTaskDuration withinPercentage 20
+        expect that executionTime isCloseTo 1 * individualTaskDuration withinPercentage 20
         expect that threads containsOnlyOnce listOf(threads.peek())
     }
 
