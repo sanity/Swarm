@@ -15,3 +15,4 @@ lib_managed/
 .project
 .scala_dependencies
 *.swp
+*/build/

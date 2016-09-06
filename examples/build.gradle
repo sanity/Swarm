@@ -1,0 +1,10 @@
+repositories {
+    maven {
+        url "https://jitpack.io"
+    }
+}
+dependencies {
+    compile rootProject
+    testCompile "com.github.memoizr:assertk:0.1.0"
+    testCompile 'com.github.memoizr:functional-kotlin-base:1.0-beta'
+}

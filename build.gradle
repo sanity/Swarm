@@ -13,17 +13,16 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'kotlin'
+allprojects {
+    apply plugin: 'kotlin'
 
-sourceCompatibility = 1.5
+    repositories {
+        mavenCentral()
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap-1.1" }
+    }
 
-repositories {
-    mavenCentral()
-    maven { url "https://dl.bintray.com/kotlin/kotlin-eap-1.1" }
-}
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
 }
