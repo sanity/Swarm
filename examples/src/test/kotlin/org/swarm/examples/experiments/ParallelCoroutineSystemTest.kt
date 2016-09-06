@@ -35,7 +35,7 @@ class ParallelCoroutineSystemTest {
 
         }
 
-        expect that executionTime isCloseTo 3 * individualTaskDuration withinPercentage 20
+        expect that executionTime isCloseTo 3 * individualTaskDuration withinPercentage 50
         expect that threads.all { it == threads.peek() } _is true
     }
 
@@ -69,7 +69,7 @@ class ParallelCoroutineSystemTest {
             latch.await()
         }
 
-        expect that executionTime isCloseTo 3 * individualTaskDuration withinPercentage 20
+        expect that executionTime isCloseTo 3 * individualTaskDuration withinPercentage 50
         expect that threads containsOnlyOnce listOf(threads.peek())
     }
 
@@ -100,7 +100,7 @@ class ParallelCoroutineSystemTest {
             latch.await()
         }
 
-        expect that executionTime isCloseTo 1 * individualTaskDuration withinPercentage 20
+        expect that executionTime isCloseTo 1 * individualTaskDuration withinPercentage 50
         expect that threads containsOnlyOnce listOf(threads.peek())
     }
 
@@ -135,7 +135,7 @@ class ParallelCoroutineSystemTest {
             latch.await()
         }
 
-        expect that executionTime isCloseTo 1 * individualTaskDuration withinPercentage 20
+        expect that executionTime isCloseTo 1 * individualTaskDuration withinPercentage 50
         expect that threads containsOnlyOnce listOf(threads.peek())
     }
 
